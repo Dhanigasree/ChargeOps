@@ -101,6 +101,14 @@ export const getAllStations = async (req, res) => {
     query["location.address"] = { $regex: req.query.address, $options: "i" };
   }
 
+  if (req.query.state) {
+    query["location.state"] = { $regex: `^${req.query.state}$`, $options: "i" };
+  }
+
+  if (req.query.district) {
+    query["location.district"] = { $regex: `^${req.query.district}$`, $options: "i" };
+  }
+
   if (req.query.chargerType) {
     query.chargerType = { $regex: `^${req.query.chargerType}$`, $options: "i" };
   }

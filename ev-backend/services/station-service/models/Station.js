@@ -8,6 +8,21 @@ const stationSchema = new mongoose.Schema(
       trim: true
     },
     location: {
+      state: {
+        type: String,
+        trim: true,
+        default: ""
+      },
+      district: {
+        type: String,
+        trim: true,
+        default: ""
+      },
+      locality: {
+        type: String,
+        trim: true,
+        default: ""
+      },
       lat: {
         type: Number,
         required: true
