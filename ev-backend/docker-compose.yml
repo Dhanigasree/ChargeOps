@@ -1,0 +1,212 @@
+version: "3.9"
+
+services:
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: 8000
+      NODE_ENV: production
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000
+      AUTH_SERVICE_URL: http://auth-service:8001
+      USER_SERVICE_URL: http://user-service:8002
+      STATION_SERVICE_URL: http://station-service:8003
+      BOOKING_SERVICE_URL: http://booking-service:8004
+      PAYMENT_SERVICE_URL: http://payment-service:8005
+      REVIEW_SERVICE_URL: http://review-service:8006
+      ADMIN_SERVICE_URL: http://admin-service:8007
+    depends_on:
+      - auth-service
+      - user-service
+      - station-service
+      - booking-service
+      - payment-service
+      - review-service
+      - admin-service
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+    container_name: auth-service
+    ports:
+      - "8001:8001"
+    environment:
+      PORT: 8001
+      NODE_ENV: production
+      MONGODB_URI: mongodb://auth-mongo:27017/ev-auth-service
+      JWT_SECRET: super-secret-jwt-key
+      JWT_EXPIRES_IN: 7d
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000
+    depends_on:
+      - auth-mongo
+
+  user-service:
+    build:
+      context: ./services/user-service
+    container_name: user-service
+    ports:
+      - "8002:8002"
+    environment:
+      PORT: 8002
+      NODE_ENV: production
+      MONGODB_URI: mongodb://user-mongo:27017/ev-user-service
+      JWT_SECRET: super-secret-jwt-key
+      JWT_EXPIRES_IN: 7d
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000
+    depends_on:
+      - user-mongo
+
+  station-service:
+    build:
+      context: ./services/station-service
+    container_name: station-service
+    ports:
+      - "8003:8003"
+    environment:
+      PORT: 8003
+      NODE_ENV: production
+      MONGODB_URI: mongodb://station-mongo:27017/ev-station-service
+      JWT_SECRET: super-secret-jwt-key
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000
+    depends_on:
+      - station-mongo
+
+  booking-service:
+    build:
+      context: ./services/booking-service
+    container_name: booking-service
+    ports:
+      - "8004:8004"
+    environment:
+      PORT: 8004
+      NODE_ENV: production
+      MONGODB_URI: mongodb://booking-mongo:27017/ev-booking-service
+      JWT_SECRET: super-secret-jwt-key
+      INTERNAL_SERVICE_API_KEY: internal-service-key
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000
+    depends_on:
+      - booking-mongo
+
+  payment-service:
+    build:
+      context: ./services/payment-service
+    container_name: payment-service
+    ports:
+      - "8005:8005"
+    environment:
+      PORT: 8005
+      NODE_ENV: production
+      MONGODB_URI: mongodb://payment-mongo:27017/ev-payment-service
+      JWT_SECRET: super-secret-jwt-key
+      BOOKING_SERVICE_URL: http://booking-service:8004
+      INTERNAL_SERVICE_API_KEY: internal-service-key
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000
+    depends_on:
+      - payment-mongo
+      - booking-service
+
+  review-service:
+    build:
+      context: ./services/review-service
+    container_name: review-service
+    ports:
+      - "8006:8006"
+    environment:
+      PORT: 8006
+      NODE_ENV: production
+      MONGODB_URI: mongodb://review-mongo:27017/ev-review-service
+      JWT_SECRET: super-secret-jwt-key
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000
+    depends_on:
+      - review-mongo
+
+  admin-service:
+    build:
+      context: ./services/admin-service
+    container_name: admin-service
+    ports:
+      - "8007:8007"
+    environment:
+      PORT: 8007
+      NODE_ENV: production
+      MONGODB_URI: mongodb://admin-mongo:27017/ev-admin-service
+      JWT_SECRET: super-secret-jwt-key
+      USER_SERVICE_URL: http://user-service:8002
+      STATION_SERVICE_URL: http://station-service:8003
+      BOOKING_SERVICE_URL: http://booking-service:8004
+      PAYMENT_SERVICE_URL: http://payment-service:8005
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000
+    depends_on:
+      - admin-mongo
+      - user-service
+      - station-service
+      - booking-service
+      - payment-service
+
+  auth-mongo:
+    image: mongo:7
+    container_name: auth-mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - auth_mongo_data:/data/db
+
+  user-mongo:
+    image: mongo:7
+    container_name: user-mongo
+    ports:
+      - "27019:27017"
+    volumes:
+      - user_mongo_data:/data/db
+
+  station-mongo:
+    image: mongo:7
+    container_name: station-mongo
+    ports:
+      - "27020:27017"
+    volumes:
+      - station_mongo_data:/data/db
+
+  booking-mongo:
+    image: mongo:7
+    container_name: booking-mongo
+    ports:
+      - "27021:27017"
+    volumes:
+      - booking_mongo_data:/data/db
+
+  payment-mongo:
+    image: mongo:7
+    container_name: payment-mongo
+    ports:
+      - "27022:27017"
+    volumes:
+      - payment_mongo_data:/data/db
+
+  review-mongo:
+    image: mongo:7
+    container_name: review-mongo
+    ports:
+      - "27023:27017"
+    volumes:
+      - review_mongo_data:/data/db
+
+  admin-mongo:
+    image: mongo:7
+    container_name: admin-mongo
+    ports:
+      - "27024:27017"
+    volumes:
+      - admin_mongo_data:/data/db
+
+volumes:
+  auth_mongo_data:
+  user_mongo_data:
+  station_mongo_data:
+  booking_mongo_data:
+  payment_mongo_data:
+  review_mongo_data:
+  admin_mongo_data:
