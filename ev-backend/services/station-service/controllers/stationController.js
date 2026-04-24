@@ -95,48 +95,49 @@ export const deleteStation = async (req, res) => {
 };
 
 export const getAllStations = async (req, res) => {
+  const filters = req.validated?.query || req.query;
   const query = {};
 
-  if (req.query.q) {
+  if (filters.q) {
     query.$or = [
-      { name: { $regex: req.query.q, $options: "i" } },
-      { "location.address": { $regex: req.query.q, $options: "i" } },
-      { "location.locality": { $regex: req.query.q, $options: "i" } },
-      { "location.district": { $regex: req.query.q, $options: "i" } },
-      { "location.state": { $regex: req.query.q, $options: "i" } }
+      { name: { $regex: filters.q, $options: "i" } },
+      { "location.address": { $regex: filters.q, $options: "i" } },
+      { "location.locality": { $regex: filters.q, $options: "i" } },
+      { "location.district": { $regex: filters.q, $options: "i" } },
+      { "location.state": { $regex: filters.q, $options: "i" } }
     ];
   }
 
-  if (req.query.address) {
-    query["location.address"] = { $regex: req.query.address, $options: "i" };
+  if (filters.address) {
+    query["location.address"] = { $regex: filters.address, $options: "i" };
   }
 
-  if (req.query.state) {
-    query["location.state"] = { $regex: `^${req.query.state}$`, $options: "i" };
+  if (filters.state) {
+    query["location.state"] = { $regex: `^${filters.state}$`, $options: "i" };
   }
 
-  if (req.query.district) {
-    query["location.district"] = { $regex: `^${req.query.district}$`, $options: "i" };
+  if (filters.district) {
+    query["location.district"] = { $regex: `^${filters.district}$`, $options: "i" };
   }
 
-  if (req.query.chargerType) {
-    query.chargerType = { $regex: `^${req.query.chargerType}$`, $options: "i" };
+  if (filters.chargerType) {
+    query.chargerType = { $regex: `^${filters.chargerType}$`, $options: "i" };
   }
 
-  if (typeof req.query.minPrice === "number" || typeof req.query.maxPrice === "number") {
+  if (typeof filters.minPrice === "number" || typeof filters.maxPrice === "number") {
     query.pricePerUnit = {};
 
-    if (typeof req.query.minPrice === "number") {
-      query.pricePerUnit.$gte = req.query.minPrice;
+    if (typeof filters.minPrice === "number") {
+      query.pricePerUnit.$gte = filters.minPrice;
     }
 
-    if (typeof req.query.maxPrice === "number") {
-      query.pricePerUnit.$lte = req.query.maxPrice;
+    if (typeof filters.maxPrice === "number") {
+      query.pricePerUnit.$lte = filters.maxPrice;
     }
   }
 
-  if (typeof req.query.isApproved === "boolean") {
-    query.isApproved = req.query.isApproved;
+  if (typeof filters.isApproved === "boolean") {
+    query.isApproved = filters.isApproved;
   }
 
   const stations = await Station.find(query).sort({ createdAt: -1 });

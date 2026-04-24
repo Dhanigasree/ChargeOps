@@ -145,7 +145,7 @@ export const createMockPayment = async (req, res) => {
 
 export const verifyStripeSession = async (req, res) => {
   const stripe = getStripeClient();
-  const sessionId = req.query.session_id;
+  const sessionId = req.validated?.query?.session_id || req.query.session_id;
   const session = await stripe.checkout.sessions.retrieve(sessionId, {
     expand: ["payment_intent"]
   });
