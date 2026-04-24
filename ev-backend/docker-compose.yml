@@ -80,6 +80,7 @@ services:
       NODE_ENV: production
       MONGODB_URI: mongodb://station-mongo:27017/ev-station-service
       JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
+      AUTO_SEED_STATIONS: ${AUTO_SEED_STATIONS:-true}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - station-mongo

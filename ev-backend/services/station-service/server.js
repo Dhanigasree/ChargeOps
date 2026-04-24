@@ -5,6 +5,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { connectDatabase } from "./config/database.js";
 import { env } from "./config/env.js";
+import { seedStationsIfEmpty } from "./config/seedStations.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 import stationRoutes from "./routes/stationRoutes.js";
 
@@ -54,6 +55,15 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     await connectDatabase();
+
+    if (env.autoSeedStations) {
+      const seeded = await seedStationsIfEmpty();
+
+      if (seeded) {
+        console.log("Station service seeded default station data");
+      }
+    }
+
     app.listen(env.port, () => {
       console.log(`Station service listening on port ${env.port}`);
     });

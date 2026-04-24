@@ -15,5 +15,6 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || "development",
   mongoUri: process.env.MONGODB_URI || "mongodb://127.0.0.1:27020/ev-station-service",
   jwtSecret: process.env.JWT_SECRET || "change-me",
+  autoSeedStations: process.env.AUTO_SEED_STATIONS !== "false",
   allowedOrigins: parseOrigins(process.env.ALLOWED_ORIGINS)
 };
