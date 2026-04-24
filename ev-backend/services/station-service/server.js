@@ -5,7 +5,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { connectDatabase } from "./config/database.js";
 import { env } from "./config/env.js";
-import { seedStationsIfEmpty } from "./config/seedStations.js";
+import { ensureDefaultStations } from "./config/seedStations.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 import stationRoutes from "./routes/stationRoutes.js";
 
@@ -57,10 +57,12 @@ const startServer = async () => {
     await connectDatabase();
 
     if (env.autoSeedStations) {
-      const seeded = await seedStationsIfEmpty();
+      const seeded = await ensureDefaultStations();
 
       if (seeded) {
-        console.log("Station service seeded default station data");
+        console.log(
+          `Station service ensured default station data (${seeded.insertedCount}/${seeded.totalDefaultStations} added)`
+        );
       }
     }
 
