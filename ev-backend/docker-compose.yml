@@ -10,7 +10,7 @@ services:
     environment:
       PORT: 8000
       NODE_ENV: production
-      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000
+      ALLOWED_ORIGINS: http://65.0.80.201:3000,http://65.0.80.201:8000
       AUTH_SERVICE_URL: http://auth-service:8001
       USER_SERVICE_URL: http://user-service:8002
       STATION_SERVICE_URL: http://station-service:8003
