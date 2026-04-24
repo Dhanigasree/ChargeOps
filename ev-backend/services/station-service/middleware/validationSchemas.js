@@ -61,6 +61,7 @@ export const stationFilterSchema = z.object({
   body: z.object({}).default({}),
   params: z.object({}).default({}),
   query: z.object({
+    q: z.string().trim().min(1).optional(),
     address: z.string().trim().min(1).optional(),
     state: z.string().trim().min(1).optional(),
     district: z.string().trim().min(1).optional(),

@@ -22,6 +22,13 @@ const buildAuthResponse = (user) => ({
 });
 
 export const register = async (req, res) => {
+  if (req.body.role === "admin" && !env.allowAdminRegistration) {
+    return res.status(403).json({
+      success: false,
+      message: "Public admin registration is disabled"
+    });
+  }
+
   const existingUser = await User.findOne({ email: req.body.email });
 
   if (existingUser) {

@@ -8,6 +8,7 @@ export const validateRequest = (schema) => (req, res, next) => {
 
     req.body = parsed.body;
     req.params = parsed.params;
+    req.query = parsed.query;
     req.validated = parsed;
 
     return next();

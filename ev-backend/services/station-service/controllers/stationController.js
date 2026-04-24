@@ -97,6 +97,16 @@ export const deleteStation = async (req, res) => {
 export const getAllStations = async (req, res) => {
   const query = {};
 
+  if (req.query.q) {
+    query.$or = [
+      { name: { $regex: req.query.q, $options: "i" } },
+      { "location.address": { $regex: req.query.q, $options: "i" } },
+      { "location.locality": { $regex: req.query.q, $options: "i" } },
+      { "location.district": { $regex: req.query.q, $options: "i" } },
+      { "location.state": { $regex: req.query.q, $options: "i" } }
+    ];
+  }
+
   if (req.query.address) {
     query["location.address"] = { $regex: req.query.address, $options: "i" };
   }
