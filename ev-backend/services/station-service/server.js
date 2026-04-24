@@ -61,7 +61,7 @@ const startServer = async () => {
 
       if (seeded) {
         console.log(
-          `Station service ensured default station data (${seeded.insertedCount}/${seeded.totalDefaultStations} added)`
+          `Station service ensured default station data (${seeded.insertedCount} inserted, ${seeded.updatedCount} updated, ${seeded.totalDefaultStations} defaults checked)`
         );
       }
     }
