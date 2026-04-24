@@ -19,7 +19,7 @@ services:
     environment:
       PORT: ${API_GATEWAY_PORT:-8000}
       NODE_ENV: production
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
       AUTH_SERVICE_URL: http://auth-service:8001
       USER_SERVICE_URL: http://user-service:8002
       STATION_SERVICE_URL: http://station-service:8003
@@ -49,7 +49,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       ALLOW_ADMIN_REGISTRATION: ${ALLOW_ADMIN_REGISTRATION:-false}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - auth-mongo
     restart: unless-stopped
@@ -65,7 +65,7 @@ services:
       MONGODB_URI: mongodb://user-mongo:27017/ev-user-service
       JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - user-mongo
     restart: unless-stopped
@@ -80,7 +80,7 @@ services:
       NODE_ENV: production
       MONGODB_URI: mongodb://station-mongo:27017/ev-station-service
       JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - station-mongo
     restart: unless-stopped
@@ -96,7 +96,7 @@ services:
       MONGODB_URI: mongodb://booking-mongo:27017/ev-booking-service
       JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
       INTERNAL_SERVICE_API_KEY: ${INTERNAL_SERVICE_API_KEY:-internal-service-key}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - booking-mongo
     restart: unless-stopped
@@ -117,7 +117,7 @@ services:
       STRIPE_CURRENCY: ${STRIPE_CURRENCY:-usd}
       STRIPE_MIN_CHARGE_AMOUNT: ${STRIPE_MIN_CHARGE_AMOUNT:-0.5}
       FRONTEND_APP_URL: ${FRONTEND_APP_URL:-http://localhost:3000}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - payment-mongo
       - booking-service
@@ -133,7 +133,7 @@ services:
       NODE_ENV: production
       MONGODB_URI: mongodb://review-mongo:27017/ev-review-service
       JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - review-mongo
     restart: unless-stopped
@@ -152,7 +152,7 @@ services:
       STATION_SERVICE_URL: http://station-service:8003
       BOOKING_SERVICE_URL: http://booking-service:8004
       PAYMENT_SERVICE_URL: http://payment-service:8005
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - admin-mongo
       - user-service
