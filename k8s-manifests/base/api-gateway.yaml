@@ -85,6 +85,7 @@ metadata:
   labels:
     app: api-gateway
 spec:
+  type: ClusterIP
   selector:
     app: api-gateway
   ports:

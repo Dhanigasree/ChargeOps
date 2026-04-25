@@ -87,6 +87,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -101,6 +114,7 @@ metadata:
   labels:
     app: auth-service
 spec:
+  type: ClusterIP
   selector:
     app: auth-service
   ports:
@@ -187,6 +201,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -201,6 +228,7 @@ metadata:
   labels:
     app: user-service
 spec:
+  type: ClusterIP
   selector:
     app: user-service
   ports:
@@ -292,6 +320,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -306,6 +347,7 @@ metadata:
   labels:
     app: station-service
 spec:
+  type: ClusterIP
   selector:
     app: station-service
   ports:
@@ -397,6 +439,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -411,6 +466,7 @@ metadata:
   labels:
     app: booking-service
 spec:
+  type: ClusterIP
   selector:
     app: booking-service
   ports:
@@ -524,6 +580,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -538,6 +607,7 @@ metadata:
   labels:
     app: payment-service
 spec:
+  type: ClusterIP
   selector:
     app: payment-service
   ports:
@@ -624,6 +694,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -638,6 +721,7 @@ metadata:
   labels:
     app: review-service
 spec:
+  type: ClusterIP
   selector:
     app: review-service
   ports:
@@ -732,6 +816,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -746,6 +843,7 @@ metadata:
   labels:
     app: admin-service
 spec:
+  type: ClusterIP
   selector:
     app: admin-service
   ports:

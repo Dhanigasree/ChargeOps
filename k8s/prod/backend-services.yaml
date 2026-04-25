@@ -2,11 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth-service
+  namespace: prod
   labels:
     app: auth-service
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: auth-service
@@ -83,6 +87,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -93,6 +110,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: auth-service
+  namespace: prod
   labels:
     app: auth-service
 spec:
@@ -108,11 +126,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: user-service
+  namespace: prod
   labels:
     app: user-service
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: user-service
@@ -179,6 +201,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -189,6 +224,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: user-service
+  namespace: prod
   labels:
     app: user-service
 spec:
@@ -204,11 +240,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: station-service
+  namespace: prod
   labels:
     app: station-service
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: station-service
@@ -280,6 +320,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -290,6 +343,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: station-service
+  namespace: prod
   labels:
     app: station-service
 spec:
@@ -305,11 +359,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: booking-service
+  namespace: prod
   labels:
     app: booking-service
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: booking-service
@@ -381,6 +439,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -391,6 +462,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: booking-service
+  namespace: prod
   labels:
     app: booking-service
 spec:
@@ -406,11 +478,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: payment-service
+  namespace: prod
   labels:
     app: payment-service
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: payment-service
@@ -504,6 +580,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -514,6 +603,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: payment-service
+  namespace: prod
   labels:
     app: payment-service
 spec:
@@ -529,11 +619,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: review-service
+  namespace: prod
   labels:
     app: review-service
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: review-service
@@ -600,6 +694,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -610,6 +717,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: review-service
+  namespace: prod
   labels:
     app: review-service
 spec:
@@ -625,11 +733,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: admin-service
+  namespace: prod
   labels:
     app: admin-service
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: admin-service
@@ -704,6 +816,19 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -714,6 +839,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: admin-service
+  namespace: prod
   labels:
     app: admin-service
 spec:
