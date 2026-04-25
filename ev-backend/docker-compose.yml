@@ -46,7 +46,7 @@ services:
       PORT: 8001
       NODE_ENV: production
       MONGODB_URI: mongodb://auth-mongo:27017/ev-auth-service
-      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
+      JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       ALLOW_ADMIN_REGISTRATION: ${ALLOW_ADMIN_REGISTRATION:-false}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
@@ -63,7 +63,7 @@ services:
       PORT: 8002
       NODE_ENV: production
       MONGODB_URI: mongodb://user-mongo:27017/ev-user-service
-      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
+      JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
@@ -79,7 +79,7 @@ services:
       PORT: 8003
       NODE_ENV: production
       MONGODB_URI: mongodb://station-mongo:27017/ev-station-service
-      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
+      JWT_SECRET: ${JWT_SECRET}
       AUTO_SEED_STATIONS: ${AUTO_SEED_STATIONS:-true}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
@@ -95,8 +95,8 @@ services:
       PORT: 8004
       NODE_ENV: production
       MONGODB_URI: mongodb://booking-mongo:27017/ev-booking-service
-      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
-      INTERNAL_SERVICE_API_KEY: ${INTERNAL_SERVICE_API_KEY:-internal-service-key}
+      JWT_SECRET: ${JWT_SECRET}
+      INTERNAL_SERVICE_API_KEY: ${INTERNAL_SERVICE_API_KEY}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - booking-mongo
@@ -111,9 +111,9 @@ services:
       PORT: 8005
       NODE_ENV: production
       MONGODB_URI: mongodb://payment-mongo:27017/ev-payment-service
-      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
+      JWT_SECRET: ${JWT_SECRET}
       BOOKING_SERVICE_URL: http://booking-service:8004
-      INTERNAL_SERVICE_API_KEY: ${INTERNAL_SERVICE_API_KEY:-internal-service-key}
+      INTERNAL_SERVICE_API_KEY: ${INTERNAL_SERVICE_API_KEY}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_CURRENCY: ${STRIPE_CURRENCY:-usd}
       STRIPE_MIN_CHARGE_AMOUNT: ${STRIPE_MIN_CHARGE_AMOUNT:-0.5}
@@ -133,7 +133,7 @@ services:
       PORT: 8006
       NODE_ENV: production
       MONGODB_URI: mongodb://review-mongo:27017/ev-review-service
-      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
+      JWT_SECRET: ${JWT_SECRET}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
     depends_on:
       - review-mongo
@@ -148,7 +148,7 @@ services:
       PORT: 8007
       NODE_ENV: production
       MONGODB_URI: mongodb://admin-mongo:27017/ev-admin-service
-      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key}
+      JWT_SECRET: ${JWT_SECRET}
       USER_SERVICE_URL: http://user-service:8002
       STATION_SERVICE_URL: http://station-service:8003
       BOOKING_SERVICE_URL: http://booking-service:8004

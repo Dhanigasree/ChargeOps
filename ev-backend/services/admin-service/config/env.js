@@ -14,7 +14,7 @@ export const env = {
   port: Number(process.env.PORT) || 8007,
   nodeEnv: process.env.NODE_ENV || "development",
   mongoUri: process.env.MONGODB_URI || "mongodb://127.0.0.1:27024/ev-admin-service",
-  jwtSecret: process.env.JWT_SECRET || "change-me",
+  jwtSecret: process.env.JWT_SECRET || "",
   userServiceUrl: process.env.USER_SERVICE_URL || "http://localhost:8002",
   stationServiceUrl: process.env.STATION_SERVICE_URL || "http://localhost:8003",
   bookingServiceUrl: process.env.BOOKING_SERVICE_URL || "http://localhost:8004",
