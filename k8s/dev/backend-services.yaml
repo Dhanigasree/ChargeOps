@@ -8,6 +8,9 @@ metadata:
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: auth-service
@@ -115,6 +118,9 @@ metadata:
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: user-service
@@ -212,6 +218,9 @@ metadata:
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: station-service
@@ -314,6 +323,9 @@ metadata:
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: booking-service
@@ -416,6 +428,9 @@ metadata:
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: payment-service
@@ -540,6 +555,9 @@ metadata:
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: review-service
@@ -637,6 +655,9 @@ metadata:
     tier: backend
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: admin-service
