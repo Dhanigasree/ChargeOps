@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: auth-service
+  namespace: dev
   labels:
     app: auth-service
     tier: backend
@@ -93,6 +94,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: auth-service
+  namespace: dev
   labels:
     app: auth-service
 spec:
@@ -107,6 +109,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: user-service
+  namespace: dev
   labels:
     app: user-service
     tier: backend
@@ -188,6 +191,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: user-service
+  namespace: dev
   labels:
     app: user-service
 spec:
@@ -202,6 +206,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: station-service
+  namespace: dev
   labels:
     app: station-service
     tier: backend
@@ -288,6 +293,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: station-service
+  namespace: dev
   labels:
     app: station-service
 spec:
@@ -302,6 +308,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: booking-service
+  namespace: dev
   labels:
     app: booking-service
     tier: backend
@@ -388,6 +395,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: booking-service
+  namespace: dev
   labels:
     app: booking-service
 spec:
@@ -402,6 +410,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: payment-service
+  namespace: dev
   labels:
     app: payment-service
     tier: backend
@@ -510,6 +519,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: payment-service
+  namespace: dev
   labels:
     app: payment-service
 spec:
@@ -524,6 +534,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: review-service
+  namespace: dev
   labels:
     app: review-service
     tier: backend
@@ -605,6 +616,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: review-service
+  namespace: dev
   labels:
     app: review-service
 spec:
@@ -619,6 +631,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: admin-service
+  namespace: dev
   labels:
     app: admin-service
     tier: backend
@@ -708,6 +721,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: admin-service
+  namespace: dev
   labels:
     app: admin-service
 spec:

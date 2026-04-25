@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chargeops-config
+  namespace: dev
+data:
+  NODE_ENV: development
+  ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8080
+  JWT_EXPIRES_IN: 7d
+  ALLOW_ADMIN_REGISTRATION: "true"
+  AUTO_SEED_STATIONS: "true"
+  STRIPE_CURRENCY: usd
+  STRIPE_MIN_CHARGE_AMOUNT: "0.5"
+  FRONTEND_APP_URL: http://localhost:3000
+  MONGO_HOST: mongodb.dev.svc.cluster.local
