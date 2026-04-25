@@ -8,3 +8,32 @@ resources:
   - configmap.yaml
   - storage.yaml
   - ../../base
+
+images:
+  - name: chargeops-frontend
+    newName: ghcr.io/dhanigasree/chargeops-frontend
+    newTag: prod-latest
+  - name: chargeops-api-gateway
+    newName: ghcr.io/dhanigasree/chargeops-api-gateway
+    newTag: prod-latest
+  - name: chargeops-auth-service
+    newName: ghcr.io/dhanigasree/chargeops-auth-service
+    newTag: prod-latest
+  - name: chargeops-user-service
+    newName: ghcr.io/dhanigasree/chargeops-user-service
+    newTag: prod-latest
+  - name: chargeops-station-service
+    newName: ghcr.io/dhanigasree/chargeops-station-service
+    newTag: prod-latest
+  - name: chargeops-booking-service
+    newName: ghcr.io/dhanigasree/chargeops-booking-service
+    newTag: prod-latest
+  - name: chargeops-payment-service
+    newName: ghcr.io/dhanigasree/chargeops-payment-service
+    newTag: prod-latest
+  - name: chargeops-review-service
+    newName: ghcr.io/dhanigasree/chargeops-review-service
+    newTag: prod-latest
+  - name: chargeops-admin-service
+    newName: ghcr.io/dhanigasree/chargeops-admin-service
+    newTag: prod-latest

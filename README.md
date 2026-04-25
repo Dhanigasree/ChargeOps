@@ -68,6 +68,8 @@ kubectl apply -k k8s-manifests/overlays/dev
 
 For prod, replace `dev` with `prod` and apply `k8s-manifests/overlays/prod`.
 
+The checked-in overlays resolve app images to `ghcr.io/dhanigasree/...:dev-latest` and `ghcr.io/dhanigasree/...:prod-latest` for manual deployments. Before applying them on a real cluster, make sure those GHCR packages exist and are public, or update the `images:` section in the overlay to your own registry/repository names.
+
 ## Verification commands
 
 Use these after deployment:
