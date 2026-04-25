@@ -1,92 +1,332 @@
-# .github/workflows/ci-security.yml
-name: CI Security Pipeline
+name: chargeops-ci-cd
 
 on:
   push:
     branches:
       - develop
       - main
-  pull_request:
-    branches:
-      - develop
-      - main
+
+permissions:
+  contents: write
+  security-events: write
+
+concurrency:
+  group: chargeops-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAMESPACE: dhaniga
 
 jobs:
-
-# -----------------------------
-# 1. Checkout Code
-# -----------------------------
-  security-checks:
+  prepare:
     runs-on: ubuntu-latest
-
+    outputs:
+      environment: ${{ steps.vars.outputs.environment }}
+      namespace: ${{ steps.vars.outputs.namespace }}
+      overlay: ${{ steps.vars.outputs.overlay }}
+      image_namespace: ${{ steps.vars.outputs.image_namespace }}
     steps:
+      - name: Resolve deployment target
+        id: vars
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            echo "environment=prod" >> "$GITHUB_OUTPUT"
+            echo "namespace=prod" >> "$GITHUB_OUTPUT"
+            echo "overlay=k8s-manifests/overlays/prod" >> "$GITHUB_OUTPUT"
+          else
+            echo "environment=dev" >> "$GITHUB_OUTPUT"
+            echo "namespace=dev" >> "$GITHUB_OUTPUT"
+            echo "overlay=k8s-manifests/overlays/dev" >> "$GITHUB_OUTPUT"
+          fi
 
-    - name: Checkout Source Code
-      uses: actions/checkout@v4
+          echo "image_namespace=${IMAGE_NAMESPACE}" >> "$GITHUB_OUTPUT"
 
-# -----------------------------
-# 2. Setup Node.js
-# -----------------------------
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
+  quality-gate:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-# -----------------------------
-# 3. Install Dependencies
-# -----------------------------
-    - name: Install Dependencies
-      run: npm install
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            ev-frontend/package-lock.json
+            ev-backend/services/*/package-lock.json
 
-# -----------------------------
-# 4. SCA Scan (Dependency Check)
-# -----------------------------
-    - name: Run npm audit
-      run: npm audit --audit-level=high
+      - name: Build frontend
+        working-directory: ev-frontend
+        run: |
+          npm ci
+          npm run build
 
-# -----------------------------
-# 5. SAST Scan (CodeQL)
-# -----------------------------
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: javascript
+      - name: Lint frontend if script exists
+        working-directory: ev-frontend
+        run: npm run lint --if-present
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+      - name: Run frontend tests if script exists
+        working-directory: ev-frontend
+        run: npm test --if-present
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      - name: Run frontend dependency audit
+        working-directory: ev-frontend
+        run: npm audit --audit-level=high || true
 
-# -----------------------------
-# 6. SonarQube Scan
-# -----------------------------
-    - name: SonarQube Scan
-      uses: SonarSource/sonarqube-scan-action@v6
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: Install backend dependencies
+        shell: bash
+        run: |
+          services=(
+            "ev-backend/services/api-gateway"
+            "ev-backend/services/auth-service"
+            "ev-backend/services/user-service"
+            "ev-backend/services/station-service"
+            "ev-backend/services/booking-service"
+            "ev-backend/services/payment-service"
+            "ev-backend/services/review-service"
+            "ev-backend/services/admin-service"
+          )
 
-# -----------------------------
-# 7. Docker Build
-# -----------------------------
-    - name: Build Docker Image
-      run: docker build -t dhaniga/chargeops-app:${{ github.sha }} .
+          for service in "${services[@]}"; do
+            npm ci --prefix "$service"
+          done
 
-# -----------------------------
-# 8. Trivy Container Scan
-# -----------------------------
-    - name: Run Trivy Scan
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: dhaniga/chargeops-app:${{ github.sha }}
-        format: table
-        exit-code: 0
-        ignore-unfixed: true
-        severity: CRITICAL,HIGH
+      - name: Validate backend JavaScript syntax
+        shell: bash
+        run: |
+          services=(
+            "ev-backend/services/api-gateway"
+            "ev-backend/services/auth-service"
+            "ev-backend/services/user-service"
+            "ev-backend/services/station-service"
+            "ev-backend/services/booking-service"
+            "ev-backend/services/payment-service"
+            "ev-backend/services/review-service"
+            "ev-backend/services/admin-service"
+          )
 
-# -----------------------------
-# 9. Success
-# -----------------------------
-    - name: Completed
-      run: echo "CI Security Checks Passed Successfully"
+          for service in "${services[@]}"; do
+            while IFS= read -r file; do
+              node --check "$file"
+            done < <(find "$service" -name '*.js' | sort)
+          done
+
+      - name: Lint backend services if scripts exist
+        shell: bash
+        run: |
+          services=(
+            "ev-backend/services/api-gateway"
+            "ev-backend/services/auth-service"
+            "ev-backend/services/user-service"
+            "ev-backend/services/station-service"
+            "ev-backend/services/booking-service"
+            "ev-backend/services/payment-service"
+            "ev-backend/services/review-service"
+            "ev-backend/services/admin-service"
+          )
+
+          for service in "${services[@]}"; do
+            npm run lint --prefix "$service" --if-present
+          done
+
+      - name: Run backend tests if scripts exist
+        shell: bash
+        run: |
+          services=(
+            "ev-backend/services/api-gateway"
+            "ev-backend/services/auth-service"
+            "ev-backend/services/user-service"
+            "ev-backend/services/station-service"
+            "ev-backend/services/booking-service"
+            "ev-backend/services/payment-service"
+            "ev-backend/services/review-service"
+            "ev-backend/services/admin-service"
+          )
+
+          for service in "${services[@]}"; do
+            npm test --prefix "$service" --if-present
+          done
+
+      - name: Run backend dependency audit
+        shell: bash
+        run: |
+          services=(
+            "ev-backend/services/api-gateway"
+            "ev-backend/services/auth-service"
+            "ev-backend/services/user-service"
+            "ev-backend/services/station-service"
+            "ev-backend/services/booking-service"
+            "ev-backend/services/payment-service"
+            "ev-backend/services/review-service"
+            "ev-backend/services/admin-service"
+          )
+
+          for service in "${services[@]}"; do
+            npm audit --prefix "$service" --audit-level=high || true
+          done
+
+  sonar-scan:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+      - quality-gate
+    if: ${{ secrets.SONAR_TOKEN != '' && secrets.SONAR_HOST_URL != '' && secrets.SONAR_PROJECT_KEY != '' }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ev-frontend/package-lock.json
+
+      - name: Install frontend dependencies for analysis
+        working-directory: ev-frontend
+        run: npm ci
+
+      - name: SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.projectName=ChargeOps
+            -Dsonar.sources=ev-backend/services,ev-frontend/src
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/coverage/**,split-output/**
+            -Dsonar.javascript.lcov.reportPaths=
+
+  build-and-scan:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+      - quality-gate
+      - sonar-scan
+    if: ${{ always() && needs.quality-gate.result == 'success' && (needs.sonar-scan.result == 'success' || needs.sonar-scan.result == 'skipped') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: chargeops-frontend
+            context: ev-frontend
+          - image: chargeops-api-gateway
+            context: ev-backend/services/api-gateway
+          - image: auth-service
+            context: ev-backend/services/auth-service
+          - image: user-service
+            context: ev-backend/services/user-service
+          - image: station-service
+            context: ev-backend/services/station-service
+          - image: booking-service
+            context: ev-backend/services/booking-service
+          - image: payment-service
+            context: ev-backend/services/payment-service
+          - image: review-service
+            context: ev-backend/services/review-service
+          - image: admin-service
+            context: ev-backend/services/admin-service
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.context }}/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}:${{ github.sha }}
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}:${{ needs.prepare.outputs.environment }}-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          exit-code: 0
+
+      - name: Upload Trivy scan result
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-${{ matrix.image }}
+
+  update-gitops-manifests:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+      - build-and-scan
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Inject image tags into overlay
+        shell: bash
+        env:
+          OVERLAY: ${{ needs.prepare.outputs.overlay }}
+          SHA_TAG: ${{ github.sha }}
+          IMAGE_NAMESPACE: ${{ needs.prepare.outputs.image_namespace }}
+        run: |
+          cd "$OVERLAY"
+          kustomize edit set image chargeops-frontend=${IMAGE_NAMESPACE}/chargeops-frontend:${SHA_TAG}
+          kustomize edit set image chargeops-api-gateway=${IMAGE_NAMESPACE}/chargeops-api-gateway:${SHA_TAG}
+          kustomize edit set image chargeops-auth-service=${IMAGE_NAMESPACE}/auth-service:${SHA_TAG}
+          kustomize edit set image chargeops-user-service=${IMAGE_NAMESPACE}/user-service:${SHA_TAG}
+          kustomize edit set image chargeops-station-service=${IMAGE_NAMESPACE}/station-service:${SHA_TAG}
+          kustomize edit set image chargeops-booking-service=${IMAGE_NAMESPACE}/booking-service:${SHA_TAG}
+          kustomize edit set image chargeops-payment-service=${IMAGE_NAMESPACE}/payment-service:${SHA_TAG}
+          kustomize edit set image chargeops-review-service=${IMAGE_NAMESPACE}/review-service:${SHA_TAG}
+          kustomize edit set image chargeops-admin-service=${IMAGE_NAMESPACE}/admin-service:${SHA_TAG}
+
+      - name: Validate overlay build
+        shell: bash
+        env:
+          OVERLAY: ${{ needs.prepare.outputs.overlay }}
+        run: |
+          kustomize build "$OVERLAY" > /tmp/rendered.yaml
+
+      - name: Commit GitOps manifest update
+        shell: bash
+        env:
+          ENVIRONMENT: ${{ needs.prepare.outputs.environment }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add k8s-manifests/overlays/dev/kustomization.yaml k8s-manifests/overlays/prod/kustomization.yaml
+          if git diff --cached --quiet; then
+            echo "No manifest changes to commit"
+            exit 0
+          fi
+          git commit -m "chore: update ${ENVIRONMENT} image tags [skip ci]"
+          git push

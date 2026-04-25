@@ -20,6 +20,8 @@ spec:
         app: mongodb
         tier: datastore
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: ip-172-31-1-99
       containers:
         - name: mongodb
           image: mongo:7
