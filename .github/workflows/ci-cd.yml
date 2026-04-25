@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
   security-events: write
 
 concurrency:
@@ -16,22 +15,23 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REGISTRY: ghcr.io
+  REGISTRY: docker.io
+  IMAGE_NAMESPACE: dhaniga
 
 jobs:
+  # Resolve environment-specific values once and reuse them in later jobs.
   prepare:
     runs-on: ubuntu-latest
     outputs:
       environment: ${{ steps.vars.outputs.environment }}
       namespace: ${{ steps.vars.outputs.namespace }}
       overlay: ${{ steps.vars.outputs.overlay }}
-      owner_lc: ${{ steps.vars.outputs.owner_lc }}
+      image_namespace: ${{ steps.vars.outputs.image_namespace }}
     steps:
       - name: Resolve deployment target
         id: vars
         shell: bash
         run: |
-          OWNER_LC="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
           if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             echo "environment=prod" >> "$GITHUB_OUTPUT"
             echo "namespace=prod" >> "$GITHUB_OUTPUT"
@@ -41,20 +41,25 @@ jobs:
             echo "namespace=dev" >> "$GITHUB_OUTPUT"
             echo "overlay=k8s-manifests/overlays/dev" >> "$GITHUB_OUTPUT"
           fi
-          echo "owner_lc=${OWNER_LC}" >> "$GITHUB_OUTPUT"
 
+          echo "image_namespace=${IMAGE_NAMESPACE}" >> "$GITHUB_OUTPUT"
+
+  # Run fast project validation before building or deploying anything.
   quality-gate:
     runs-on: ubuntu-latest
     needs: prepare
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: ev-frontend/package-lock.json
+          cache-dependency-path: |
+            ev-frontend/package-lock.json
+            ev-backend/services/*/package-lock.json
 
       - name: Build frontend
         working-directory: ev-frontend
@@ -82,11 +87,51 @@ jobs:
             done < <(find "$service" -name '*.js' | sort)
           done
 
+  # Run SonarQube analysis after the basic build and syntax checks pass.
+  sonar-scan:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+      - quality-gate
+    if: ${{ secrets.SONAR_TOKEN != '' && secrets.SONAR_HOST_URL != '' && secrets.SONAR_PROJECT_KEY != '' }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ev-frontend/package-lock.json
+
+      - name: Install frontend dependencies for analysis
+        working-directory: ev-frontend
+        run: npm ci
+
+      - name: SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.projectName=ChargeOps
+            -Dsonar.sources=ev-backend/services,ev-frontend/src
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/coverage/**,split-output/**
+            -Dsonar.javascript.lcov.reportPaths=
+
+  # Build every deployable image, push to Docker Hub, and scan it with Trivy.
   build-and-scan:
     runs-on: ubuntu-latest
     needs:
       - prepare
       - quality-gate
+      - sonar-scan
+    if: ${{ always() && needs.quality-gate.result == 'success' && (needs.sonar-scan.result == 'success' || needs.sonar-scan.result == 'skipped') }}
     strategy:
       fail-fast: false
       matrix:
@@ -95,32 +140,33 @@ jobs:
             context: ev-frontend
           - image: chargeops-api-gateway
             context: ev-backend/services/api-gateway
-          - image: chargeops-auth-service
+          - image: auth-service
             context: ev-backend/services/auth-service
-          - image: chargeops-user-service
+          - image: user-service
             context: ev-backend/services/user-service
-          - image: chargeops-station-service
+          - image: station-service
             context: ev-backend/services/station-service
-          - image: chargeops-booking-service
+          - image: booking-service
             context: ev-backend/services/booking-service
-          - image: chargeops-payment-service
+          - image: payment-service
             context: ev-backend/services/payment-service
-          - image: chargeops-review-service
+          - image: review-service
             context: ev-backend/services/review-service
-          - image: chargeops-admin-service
+          - image: admin-service
             context: ev-backend/services/admin-service
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GHCR
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push image
         uses: docker/build-push-action@v6
@@ -129,27 +175,28 @@ jobs:
           file: ${{ matrix.context }}/Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ needs.prepare.outputs.owner_lc }}/${{ matrix.image }}:${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ needs.prepare.outputs.owner_lc }}/${{ matrix.image }}:${{ needs.prepare.outputs.environment }}-latest
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}:${{ github.sha }}
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}:${{ needs.prepare.outputs.environment }}-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.24.0
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ needs.prepare.outputs.owner_lc }}/${{ matrix.image }}:${{ github.sha }}
+          image-ref: ${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}:${{ github.sha }}
           format: sarif
           output: trivy-results.sarif
           severity: HIGH,CRITICAL
           exit-code: 1
 
       - name: Upload Trivy scan result
-        uses: github/codeql-action/upload-sarif@v3
         if: always()
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-results.sarif
           category: trivy-${{ matrix.image }}
 
+  # Deploy the exact images that passed validation and security scanning.
   deploy:
     runs-on: ubuntu-latest
     needs:
@@ -157,7 +204,8 @@ jobs:
       - build-and-scan
     environment: ${{ needs.prepare.outputs.environment }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v4
@@ -191,20 +239,19 @@ jobs:
         shell: bash
         env:
           OVERLAY: ${{ needs.prepare.outputs.overlay }}
-          OWNER_LC: ${{ needs.prepare.outputs.owner_lc }}
           SHA_TAG: ${{ github.sha }}
-          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAMESPACE: ${{ needs.prepare.outputs.image_namespace }}
         run: |
           cd "$OVERLAY"
-          kustomize edit set image chargeops-frontend=${REGISTRY}/${OWNER_LC}/chargeops-frontend:${SHA_TAG}
-          kustomize edit set image chargeops-api-gateway=${REGISTRY}/${OWNER_LC}/chargeops-api-gateway:${SHA_TAG}
-          kustomize edit set image chargeops-auth-service=${REGISTRY}/${OWNER_LC}/chargeops-auth-service:${SHA_TAG}
-          kustomize edit set image chargeops-user-service=${REGISTRY}/${OWNER_LC}/chargeops-user-service:${SHA_TAG}
-          kustomize edit set image chargeops-station-service=${REGISTRY}/${OWNER_LC}/chargeops-station-service:${SHA_TAG}
-          kustomize edit set image chargeops-booking-service=${REGISTRY}/${OWNER_LC}/chargeops-booking-service:${SHA_TAG}
-          kustomize edit set image chargeops-payment-service=${REGISTRY}/${OWNER_LC}/chargeops-payment-service:${SHA_TAG}
-          kustomize edit set image chargeops-review-service=${REGISTRY}/${OWNER_LC}/chargeops-review-service:${SHA_TAG}
-          kustomize edit set image chargeops-admin-service=${REGISTRY}/${OWNER_LC}/chargeops-admin-service:${SHA_TAG}
+          kustomize edit set image chargeops-frontend=${IMAGE_NAMESPACE}/chargeops-frontend:${SHA_TAG}
+          kustomize edit set image chargeops-api-gateway=${IMAGE_NAMESPACE}/chargeops-api-gateway:${SHA_TAG}
+          kustomize edit set image chargeops-auth-service=${IMAGE_NAMESPACE}/auth-service:${SHA_TAG}
+          kustomize edit set image chargeops-user-service=${IMAGE_NAMESPACE}/user-service:${SHA_TAG}
+          kustomize edit set image chargeops-station-service=${IMAGE_NAMESPACE}/station-service:${SHA_TAG}
+          kustomize edit set image chargeops-booking-service=${IMAGE_NAMESPACE}/booking-service:${SHA_TAG}
+          kustomize edit set image chargeops-payment-service=${IMAGE_NAMESPACE}/payment-service:${SHA_TAG}
+          kustomize edit set image chargeops-review-service=${IMAGE_NAMESPACE}/review-service:${SHA_TAG}
+          kustomize edit set image chargeops-admin-service=${IMAGE_NAMESPACE}/admin-service:${SHA_TAG}
 
       - name: Deploy to Kubernetes
         shell: bash

@@ -13,6 +13,7 @@ pnpm-debug.log*
 dist/
 build/
 coverage/
+split-output/
 
 .DS_Store
 Thumbs.db

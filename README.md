@@ -6,11 +6,23 @@ This repository now includes a capstone-ready CI/CD setup for ChargeOps using Do
 
 - `ev-frontend/` contains the React UI and its hardened Docker image build.
 - `ev-backend/services/` contains the API gateway and backend microservices.
+- `scripts/prepare-microservice-repos.ps1` generates one repo per service to support a GitHub organization layout with separate repositories.
+- `docs/repo-split-plan.md` documents the recommended repo split for GitHub.
 - `k8s-manifests/base/` contains reusable Kubernetes deployments, services, MongoDB, probes, and network policies.
 - `k8s-manifests/overlays/dev/` contains the `dev` namespace, config, and persistent storage binding.
 - `k8s-manifests/overlays/prod/` contains the `prod` namespace, config, and persistent storage binding.
 - `.github/workflows/ci-cd.yml` contains the branch-based build, scan, push, and deploy workflow.
 - `.github/workflows/codeql.yml` contains SAST scanning with GitHub CodeQL.
+
+## Multi-Repo Export
+
+If you want this project to appear on GitHub as separate repositories like a microservices organization page, generate split repositories with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\prepare-microservice-repos.ps1
+```
+
+This creates `split-output/` with one folder per service plus a dedicated infrastructure repo. See `docs/repo-split-plan.md` for the recommended repo names and push flow.
 
 ## Branch trigger logic
 

@@ -1,0 +1,68 @@
+{
+  "repos": [
+    {
+      "name": "api-gateway",
+      "kind": "backend-service",
+      "source": "ev-backend/services/api-gateway",
+      "port": 8000
+    },
+    {
+      "name": "authentication-service",
+      "kind": "backend-service",
+      "source": "ev-backend/services/auth-service",
+      "port": 8001
+    },
+    {
+      "name": "user-service",
+      "kind": "backend-service",
+      "source": "ev-backend/services/user-service",
+      "port": 8002
+    },
+    {
+      "name": "inventory-service",
+      "kind": "backend-service",
+      "source": "ev-backend/services/station-service",
+      "port": 8003
+    },
+    {
+      "name": "order-service",
+      "kind": "backend-service",
+      "source": "ev-backend/services/booking-service",
+      "port": 8004
+    },
+    {
+      "name": "payment-service",
+      "kind": "backend-service",
+      "source": "ev-backend/services/payment-service",
+      "port": 8005
+    },
+    {
+      "name": "review-rating-service",
+      "kind": "backend-service",
+      "source": "ev-backend/services/review-service",
+      "port": 8006
+    },
+    {
+      "name": "admin-service",
+      "kind": "backend-service",
+      "source": "ev-backend/services/admin-service",
+      "port": 8007
+    },
+    {
+      "name": "E-Commerce-App",
+      "kind": "frontend",
+      "source": "ev-frontend",
+      "port": 8080
+    },
+    {
+      "name": "Documentation-K8s",
+      "kind": "platform",
+      "sources": [
+        "k8s",
+        "k8s-manifests",
+        ".github/workflows",
+        "README.md"
+      ]
+    }
+  ]
+}
