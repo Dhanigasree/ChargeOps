@@ -6,6 +6,7 @@ namespace: prod
 resources:
   - namespace.yaml
   - configmap.yaml
+  - secrets.yaml
   - storage.yaml
   - ../../base
 

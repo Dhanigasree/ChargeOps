@@ -366,7 +366,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: chargeops-secrets
-                  key: INTERNAL_SERVICE_API_KEY
+                  key: API_KEY
             - name: MONGODB_URI
               value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-booking-service?authSource=admin
           livenessProbe:
@@ -482,12 +482,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: chargeops-secrets
-                  key: INTERNAL_SERVICE_API_KEY
+                  key: API_KEY
             - name: STRIPE_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: chargeops-secrets
-                  key: STRIPE_SECRET_KEY
+                  key: API_KEY
             - name: BOOKING_SERVICE_URL
               value: http://booking-service:8004
             - name: MONGODB_URI
