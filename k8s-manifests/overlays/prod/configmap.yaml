@@ -4,7 +4,7 @@ metadata:
   name: chargeops-config
 data:
   NODE_ENV: production
-  ALLOWED_ORIGINS: https://chargeops.example.com
+  ALLOWED_ORIGINS: "*"
   JWT_EXPIRES_IN: 7d
   ALLOW_ADMIN_REGISTRATION: "false"
   AUTO_SEED_STATIONS: "true"

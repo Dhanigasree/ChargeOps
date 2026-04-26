@@ -5,7 +5,7 @@ metadata:
   namespace: dev
 data:
   NODE_ENV: development
-  ALLOWED_ORIGINS: http://dev.chargeops.local
+  ALLOWED_ORIGINS: "*"
   JWT_EXPIRES_IN: 7d
   ALLOW_ADMIN_REGISTRATION: "true"
   AUTO_SEED_STATIONS: "true"

@@ -5,7 +5,7 @@ metadata:
   namespace: prod
 data:
   NODE_ENV: production
-  ALLOWED_ORIGINS: http://prod.chargeops.local
+  ALLOWED_ORIGINS: "*"
   JWT_EXPIRES_IN: 7d
   ALLOW_ADMIN_REGISTRATION: "false"
   AUTO_SEED_STATIONS: "true"
