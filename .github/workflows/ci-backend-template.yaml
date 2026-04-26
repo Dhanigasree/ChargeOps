@@ -23,9 +23,7 @@ on:
       sonar_project_base_dir:
         required: true
         type: string
-      image_name:
-        required: true
-        type: string
+      # image_name removed — now constructed inside template using DOCKERHUB_USERNAME secret
       pr_number:
         required: true
         type: string
@@ -76,11 +74,17 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         run: npm ci
 
-
       - name: Run SonarQube scan
         uses: SonarSource/sonarqube-scan-action@v2
         with:
           projectBaseDir: ${{ inputs.sonar_project_base_dir }}
+          args: >
+            -Dsonar.projectKey=chargeops-${{ inputs.service }}
+            -Dsonar.projectName=ChargeOps ${{ inputs.service }}
+            -Dsonar.sources=.
+            -Dsonar.exclusions=node_modules/**,coverage/**,**/*.test.js,**/*.spec.js
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.plugins.downloadOnlyRequired=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -166,7 +170,8 @@ jobs:
           context: ${{ inputs.working_directory }}
           file: ${{ inputs.working_directory }}/Dockerfile
           push: false
-          tags: ${{ inputs.image_name }}:pr-${{ inputs.pr_number }}
+          # ✅ Fixed: image tag constructed here using secret directly
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.service }}:pr-${{ inputs.pr_number }}
           build-args: NODE_ENV=production
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -215,7 +220,8 @@ jobs:
       - name: Run Trivy scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ inputs.image_name }}:pr-${{ inputs.pr_number }}
+          # ✅ Fixed: image-ref also updated to use secret directly
+          image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.service }}:pr-${{ inputs.pr_number }}
           format: table
           exit-code: 1
           ignore-unfixed: true
