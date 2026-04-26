@@ -52,15 +52,15 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 const startServer = async () => {
-  try {
-    await connectDatabase();
-    app.listen(env.port, () => {
-      console.log(`Review service listening on port ${env.port}`);
-    });
-  } catch (error) {
-    console.error("Failed to start review service", error);
-    process.exit(1);
-  }
+  connectDatabase().catch((error) => {
+    console.error("Review service MongoDB connection error", error);
+  });
+
+  app.listen(env.port, "0.0.0.0", () => {
+    console.log(`Review service listening on port ${env.port}`);
+  });
 };
 
-startServer();
+startServer().catch((error) => {
+  console.error("Failed to start review service", error);
+});

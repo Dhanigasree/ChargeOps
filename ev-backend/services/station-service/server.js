@@ -53,26 +53,27 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 const startServer = async () => {
-  try {
-    await connectDatabase();
+  connectDatabase()
+    .then(async () => {
+      if (env.autoSeedStations) {
+        const seeded = await ensureDefaultStations();
 
-    if (env.autoSeedStations) {
-      const seeded = await ensureDefaultStations();
-
-      if (seeded) {
-        console.log(
-          `Station service ensured default station data (${seeded.insertedCount} inserted, ${seeded.updatedCount} updated, ${seeded.totalDefaultStations} defaults checked)`
-        );
+        if (seeded) {
+          console.log(
+            `Station service ensured default station data (${seeded.insertedCount} inserted, ${seeded.updatedCount} updated, ${seeded.totalDefaultStations} defaults checked)`
+          );
+        }
       }
-    }
-
-    app.listen(env.port, () => {
-      console.log(`Station service listening on port ${env.port}`);
+    })
+    .catch((error) => {
+      console.error("Station service MongoDB connection error", error);
     });
-  } catch (error) {
-    console.error("Failed to start station service", error);
-    process.exit(1);
-  }
+
+  app.listen(env.port, "0.0.0.0", () => {
+    console.log(`Station service listening on port ${env.port}`);
+  });
 };
 
-startServer();
+startServer().catch((error) => {
+  console.error("Failed to start station service", error);
+});

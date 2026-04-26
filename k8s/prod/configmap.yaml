@@ -12,4 +12,6 @@ data:
   STRIPE_CURRENCY: usd
   STRIPE_MIN_CHARGE_AMOUNT: "0.5"
   FRONTEND_APP_URL: https://chargeops.example.com
+  REACT_APP_API_URL: http://api-gateway:8000
   MONGO_HOST: mongodb
+  MONGO_URI: mongodb://admin:password123@mongodb:27017/chargeops?authSource=admin

@@ -52,16 +52,15 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 const startServer = async () => {
-  try {
-    await connectDatabase();
+  connectDatabase().catch((error) => {
+    console.error("Auth service MongoDB connection error", error);
+  });
 
-    app.listen(env.port, () => {
-      console.log(`Auth service listening on port ${env.port}`);
-    });
-  } catch (error) {
-    console.error("Failed to start auth service", error);
-    process.exit(1);
-  }
+  app.listen(env.port, "0.0.0.0", () => {
+    console.log(`Auth service listening on port ${env.port}`);
+  });
 };
 
-startServer();
+startServer().catch((error) => {
+  console.error("Failed to start auth service", error);
+});

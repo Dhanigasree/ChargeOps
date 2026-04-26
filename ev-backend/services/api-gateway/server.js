@@ -43,6 +43,6 @@ app.use(gatewayRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-app.listen(env.port, () => {
+app.listen(env.port, "0.0.0.0", () => {
   console.log(`API Gateway listening on port ${env.port}`);
 });

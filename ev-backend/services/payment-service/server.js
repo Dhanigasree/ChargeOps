@@ -52,15 +52,15 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 const startServer = async () => {
-  try {
-    await connectDatabase();
-    app.listen(env.port, () => {
-      console.log(`Payment service listening on port ${env.port}`);
-    });
-  } catch (error) {
-    console.error("Failed to start payment service", error);
-    process.exit(1);
-  }
+  connectDatabase().catch((error) => {
+    console.error("Payment service MongoDB connection error", error);
+  });
+
+  app.listen(env.port, "0.0.0.0", () => {
+    console.log(`Payment service listening on port ${env.port}`);
+  });
 };
 
-startServer();
+startServer().catch((error) => {
+  console.error("Failed to start payment service", error);
+});

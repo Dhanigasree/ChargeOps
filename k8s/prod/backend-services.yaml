@@ -80,7 +80,7 @@ spec:
                 secretKeyRef:
                   name: chargeops-secrets
                   key: JWT_SECRET
-            - name: MONGODB_URI
+            - name: MONGO_URI
               value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-auth-service?authSource=admin
           livenessProbe:
             httpGet:
@@ -201,7 +201,7 @@ spec:
                 secretKeyRef:
                   name: chargeops-secrets
                   key: JWT_SECRET
-            - name: MONGODB_URI
+            - name: MONGO_URI
               value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-user-service?authSource=admin
           livenessProbe:
             httpGet:
@@ -327,7 +327,7 @@ spec:
                 secretKeyRef:
                   name: chargeops-secrets
                   key: JWT_SECRET
-            - name: MONGODB_URI
+            - name: MONGO_URI
               value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-station-service?authSource=admin
           livenessProbe:
             httpGet:
@@ -453,7 +453,7 @@ spec:
                 secretKeyRef:
                   name: chargeops-secrets
                   key: API_KEY
-            - name: MONGODB_URI
+            - name: MONGO_URI
               value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-booking-service?authSource=admin
           livenessProbe:
             httpGet:
@@ -598,10 +598,10 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: chargeops-secrets
-                  key: API_KEY
+                  key: STRIPE_SECRET_KEY
             - name: BOOKING_SERVICE_URL
               value: http://booking-service:8004
-            - name: MONGODB_URI
+            - name: MONGO_URI
               value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-payment-service?authSource=admin
           livenessProbe:
             httpGet:
@@ -722,7 +722,7 @@ spec:
                 secretKeyRef:
                   name: chargeops-secrets
                   key: JWT_SECRET
-            - name: MONGODB_URI
+            - name: MONGO_URI
               value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-review-service?authSource=admin
           livenessProbe:
             httpGet:
@@ -851,7 +851,7 @@ spec:
               value: http://booking-service:8004
             - name: PAYMENT_SERVICE_URL
               value: http://payment-service:8005
-            - name: MONGODB_URI
+            - name: MONGO_URI
               value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-admin-service?authSource=admin
           livenessProbe:
             httpGet:
