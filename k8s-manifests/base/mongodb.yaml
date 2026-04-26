@@ -47,6 +47,11 @@ spec:
               port: mongo
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            tcpSocket:
+              port: mongo
+            failureThreshold: 24
+            periodSeconds: 5
       volumes:
         - name: mongodb-data
           persistentVolumeClaim:

@@ -19,6 +19,13 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: auth-service
           image: dhaniga/auth-service:v1
@@ -125,6 +132,13 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: user-service
           image: dhaniga/user-service:v1
@@ -221,6 +235,13 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: station-service
           image: dhaniga/station-service:v1
@@ -322,6 +343,13 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: booking-service
           image: dhaniga/booking-service:v1
@@ -423,6 +451,13 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: payment-service
           image: dhaniga/payment-service:v1
@@ -546,6 +581,13 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: review-service
           image: dhaniga/review-service:v1
@@ -642,6 +684,13 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: admin-service
           image: dhaniga/admin-service:v1

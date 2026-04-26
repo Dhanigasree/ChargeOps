@@ -38,6 +38,12 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
           resources:
             requests:
               cpu: 100m

@@ -24,6 +24,22 @@ powershell -ExecutionPolicy Bypass -File .\scripts\prepare-microservice-repos.ps
 
 This creates `split-output/` with one folder per service plus a dedicated infrastructure repo. See `docs/repo-split-plan.md` for the recommended repo names and push flow.
 
+## Capstone Runbook
+
+This project now includes:
+
+- `k8s/dev/` for direct dev namespace deployment
+- `k8s/prod/` for direct prod namespace deployment
+- `.github/workflows/ci-cd.yml` for branch-based CI/CD with Docker Hub, Trivy, SonarQube, and Kubernetes deployment
+- `docs/github-secrets-runbook.md` for GitHub Actions, Docker Hub, Kubernetes, and SonarQube secrets setup
+
+Direct apply commands:
+
+```bash
+kubectl apply -f k8s/dev/
+kubectl apply -f k8s/prod/
+```
+
 ## Branch trigger logic
 
 - Push to `develop` deploys to the `dev` GitHub Environment and the `dev` Kubernetes namespace.
