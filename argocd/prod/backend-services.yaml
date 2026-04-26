@@ -1,0 +1,789 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: prod
+  labels:
+    app: auth-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+        tier: backend
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
+      containers:
+        - name: auth-service
+          image: dhaniga/auth-service:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8001
+          env:
+            - name: PORT
+              value: "8001"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: NODE_ENV
+            - name: ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: ALLOWED_ORIGINS
+            - name: JWT_EXPIRES_IN
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: JWT_EXPIRES_IN
+            - name: ALLOW_ADMIN_REGISTRATION
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: ALLOW_ADMIN_REGISTRATION
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: MONGO_HOST
+            - name: MONGO_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: JWT_SECRET
+            - name: MONGODB_URI
+              value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-auth-service?authSource=admin
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: prod
+  labels:
+    app: auth-service
+spec:
+  type: ClusterIP
+  selector:
+    app: auth-service
+  ports:
+    - name: http
+      port: 8001
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: prod
+  labels:
+    app: user-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+        tier: backend
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
+      containers:
+        - name: user-service
+          image: dhaniga/user-service:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8002
+          env:
+            - name: PORT
+              value: "8002"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: NODE_ENV
+            - name: ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: ALLOWED_ORIGINS
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: MONGO_HOST
+            - name: MONGO_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: JWT_SECRET
+            - name: MONGODB_URI
+              value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-user-service?authSource=admin
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: prod
+  labels:
+    app: user-service
+spec:
+  type: ClusterIP
+  selector:
+    app: user-service
+  ports:
+    - name: http
+      port: 8002
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: station-service
+  namespace: prod
+  labels:
+    app: station-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: station-service
+  template:
+    metadata:
+      labels:
+        app: station-service
+        tier: backend
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
+      containers:
+        - name: station-service
+          image: dhaniga/station-service:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8003
+          env:
+            - name: PORT
+              value: "8003"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: NODE_ENV
+            - name: ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: ALLOWED_ORIGINS
+            - name: AUTO_SEED_STATIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: AUTO_SEED_STATIONS
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: MONGO_HOST
+            - name: MONGO_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: JWT_SECRET
+            - name: MONGODB_URI
+              value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-station-service?authSource=admin
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: station-service
+  namespace: prod
+  labels:
+    app: station-service
+spec:
+  type: ClusterIP
+  selector:
+    app: station-service
+  ports:
+    - name: http
+      port: 8003
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booking-service
+  namespace: prod
+  labels:
+    app: booking-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: booking-service
+  template:
+    metadata:
+      labels:
+        app: booking-service
+        tier: backend
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
+      containers:
+        - name: booking-service
+          image: dhaniga/booking-service:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8004
+          env:
+            - name: PORT
+              value: "8004"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: NODE_ENV
+            - name: ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: ALLOWED_ORIGINS
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: MONGO_HOST
+            - name: MONGO_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: JWT_SECRET
+            - name: INTERNAL_SERVICE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: API_KEY
+            - name: MONGODB_URI
+              value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-booking-service?authSource=admin
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: booking-service
+  namespace: prod
+  labels:
+    app: booking-service
+spec:
+  type: ClusterIP
+  selector:
+    app: booking-service
+  ports:
+    - name: http
+      port: 8004
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: prod
+  labels:
+    app: payment-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+        tier: backend
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
+      containers:
+        - name: payment-service
+          image: dhaniga/payment-service:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8005
+          env:
+            - name: PORT
+              value: "8005"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: NODE_ENV
+            - name: ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: ALLOWED_ORIGINS
+            - name: STRIPE_CURRENCY
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: STRIPE_CURRENCY
+            - name: STRIPE_MIN_CHARGE_AMOUNT
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: STRIPE_MIN_CHARGE_AMOUNT
+            - name: FRONTEND_APP_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: FRONTEND_APP_URL
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: MONGO_HOST
+            - name: MONGO_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: JWT_SECRET
+            - name: INTERNAL_SERVICE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: API_KEY
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: API_KEY
+            - name: BOOKING_SERVICE_URL
+              value: http://booking-service:8004
+            - name: MONGODB_URI
+              value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-payment-service?authSource=admin
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: prod
+  labels:
+    app: payment-service
+spec:
+  type: ClusterIP
+  selector:
+    app: payment-service
+  ports:
+    - name: http
+      port: 8005
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-service
+  namespace: prod
+  labels:
+    app: review-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-service
+  template:
+    metadata:
+      labels:
+        app: review-service
+        tier: backend
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
+      containers:
+        - name: review-service
+          image: dhaniga/review-service:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8006
+          env:
+            - name: PORT
+              value: "8006"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: NODE_ENV
+            - name: ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: ALLOWED_ORIGINS
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: MONGO_HOST
+            - name: MONGO_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: JWT_SECRET
+            - name: MONGODB_URI
+              value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-review-service?authSource=admin
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: review-service
+  namespace: prod
+  labels:
+    app: review-service
+spec:
+  type: ClusterIP
+  selector:
+    app: review-service
+  ports:
+    - name: http
+      port: 8006
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-service
+  namespace: prod
+  labels:
+    app: admin-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-service
+  template:
+    metadata:
+      labels:
+        app: admin-service
+        tier: backend
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
+      containers:
+        - name: admin-service
+          image: dhaniga/admin-service:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8007
+          env:
+            - name: PORT
+              value: "8007"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: NODE_ENV
+            - name: ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: ALLOWED_ORIGINS
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: MONGO_HOST
+            - name: MONGO_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: JWT_SECRET
+            - name: USER_SERVICE_URL
+              value: http://user-service:8002
+            - name: STATION_SERVICE_URL
+              value: http://station-service:8003
+            - name: BOOKING_SERVICE_URL
+              value: http://booking-service:8004
+            - name: PAYMENT_SERVICE_URL
+              value: http://payment-service:8005
+            - name: MONGODB_URI
+              value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-admin-service?authSource=admin
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-service
+  namespace: prod
+  labels:
+    app: admin-service
+spec:
+  type: ClusterIP
+  selector:
+    app: admin-service
+  ports:
+    - name: http
+      port: 8007
+      targetPort: http
