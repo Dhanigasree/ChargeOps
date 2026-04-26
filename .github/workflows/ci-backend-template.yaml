@@ -217,7 +217,7 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
           severity: HIGH,CRITICAL
-          trivyignores: .trivyignore
+          trivyignores: ${{ github.workspace }}/.trivyignore   
 
       - name: Send Trivy failure email
         if: failure()
