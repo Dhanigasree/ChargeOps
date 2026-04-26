@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: admin-service
-          image: dockerhubusername/admin-service:latest
+          image: dhaniga/admin-service:aa083dd9d90c4d5724ebe1843128abafa3ca1944
           ports:
             - name: http
               containerPort: 3000
