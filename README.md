@@ -139,3 +139,7 @@ The overlay storage files use `hostPath`-backed persistent volumes:
 - `k8s-manifests/overlays/prod/storage.yaml`
 
 This is appropriate for Minikube, Docker Desktop Kubernetes, or other local clusters. For a cloud-managed cluster, replace the `PersistentVolume` definitions with your storage class or dynamic provisioning approach.
+
+
+
+
