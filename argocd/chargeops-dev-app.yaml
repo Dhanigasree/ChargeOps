@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/Dhanigasree/ChargeOps.git
     targetRevision: develop
-    path: k8s-manifests/overlays/dev
+    path: argocd/dev
   destination:
     server: https://kubernetes.default.svc
     namespace: dev
