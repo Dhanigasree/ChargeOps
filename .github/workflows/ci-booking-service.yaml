@@ -21,7 +21,6 @@ jobs:
       node_version: "20"
       test_command: "npm run test -- --coverage"
       sonar_project_base_dir: apps/booking-service
-      image_name: ${{ secrets.DOCKERHUB_USERNAME }}/booking-service
       pr_number: ${{ github.event.pull_request.number }}
       head_ref: ${{ github.head_ref }}
       actor: ${{ github.actor }}
