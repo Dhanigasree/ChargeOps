@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: chargeops
+  namespace: dev
+spec:
+  gatewayClassName: kgateway
+  infrastructure:
+    parametersRef:
+      group: gateway.kgateway.dev
+      kind: GatewayParameters
+      name: chargeops-dev-gateway-params
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: dev.chargeops.local
+      allowedRoutes:
+        namespaces:
+          from: Same

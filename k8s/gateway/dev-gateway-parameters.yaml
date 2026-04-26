@@ -1,0 +1,17 @@
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: GatewayParameters
+metadata:
+  name: chargeops-dev-gateway-params
+  namespace: dev
+spec:
+  kube:
+    service:
+      type: NodePort
+      extraLabels:
+        app: kgateway-proxy
+        gateway: chargeops
+      externalTrafficPolicy: Local
+    podTemplate:
+      extraLabels:
+        app: kgateway-proxy
+        gateway: chargeops

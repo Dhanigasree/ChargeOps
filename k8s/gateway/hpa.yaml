@@ -1,1 +1,0 @@
-# No HorizontalPodAutoscaler is currently configured for api-gateway.\n# This placeholder is intentionally not referenced by k8s/gateway/kustomization.yaml.

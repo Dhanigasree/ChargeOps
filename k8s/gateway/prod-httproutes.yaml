@@ -1,0 +1,79 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: chargeops-api
+  namespace: prod
+spec:
+  parentRefs:
+    - name: chargeops
+  hostnames:
+    - prod.chargeops.local
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/auth
+      backendRefs:
+        - name: auth-service
+          port: 8001
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/users
+      backendRefs:
+        - name: user-service
+          port: 8002
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/stations
+      backendRefs:
+        - name: station-service
+          port: 8003
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/bookings
+      backendRefs:
+        - name: booking-service
+          port: 8004
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/payments
+      backendRefs:
+        - name: payment-service
+          port: 8005
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/reviews
+      backendRefs:
+        - name: review-service
+          port: 8006
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/admin
+      backendRefs:
+        - name: admin-service
+          port: 8007
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: chargeops-frontend
+  namespace: prod
+spec:
+  parentRefs:
+    - name: chargeops
+  hostnames:
+    - prod.chargeops.local
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: frontend
+          port: 80

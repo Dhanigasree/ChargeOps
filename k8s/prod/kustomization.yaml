@@ -18,8 +18,6 @@ resources:
   - payment-service/service.yaml
   - review-service/deployment.yaml
   - review-service/service.yaml
-  - mongodb/storage.yaml
-  - mongodb/pvc.yaml
   - mongodb/deployment.yaml
   - mongodb/service.yaml
   - frontend/deployment.yaml

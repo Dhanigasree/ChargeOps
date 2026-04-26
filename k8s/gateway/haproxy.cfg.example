@@ -1,0 +1,24 @@
+frontend chargeops_http
+    bind *:80
+    mode http
+    acl host_dev hdr(host) -i dev.chargeops.local
+    acl host_prod hdr(host) -i prod.chargeops.local
+    use_backend chargeops_dev if host_dev
+    use_backend chargeops_prod if host_prod
+    default_backend chargeops_prod
+
+backend chargeops_dev
+    mode http
+    balance roundrobin
+    option httpchk GET / HTTP/1.1\r\nHost:\ dev.chargeops.local
+    server node1 10.0.0.11:30080 check
+    server node2 10.0.0.12:30080 check
+    server node3 10.0.0.13:30080 check
+
+backend chargeops_prod
+    mode http
+    balance roundrobin
+    option httpchk GET / HTTP/1.1\r\nHost:\ prod.chargeops.local
+    server node1 10.0.0.11:30081 check
+    server node2 10.0.0.12:30081 check
+    server node3 10.0.0.13:30081 check

@@ -1,22 +1,22 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: api-gateway-ingress
+  name: frontend-ingress
   namespace: dev
 spec:
   podSelector:
     matchLabels:
-      app: api-gateway
+      app: frontend
   policyTypes:
     - Ingress
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              app: frontend
+              app: kgateway-proxy
       ports:
         - protocol: TCP
-          port: 8000
+          port: 8080
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -33,7 +33,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: api-gateway
+              app: kgateway-proxy
       ports:
         - protocol: TCP
           port: 8001
@@ -53,7 +53,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: api-gateway
+              app: kgateway-proxy
         - podSelector:
             matchLabels:
               app: admin-service
@@ -76,7 +76,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: api-gateway
+              app: kgateway-proxy
         - podSelector:
             matchLabels:
               app: admin-service
@@ -99,7 +99,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: api-gateway
+              app: kgateway-proxy
         - podSelector:
             matchLabels:
               app: admin-service
@@ -125,7 +125,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: api-gateway
+              app: kgateway-proxy
         - podSelector:
             matchLabels:
               app: admin-service
@@ -148,7 +148,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: api-gateway
+              app: kgateway-proxy
       ports:
         - protocol: TCP
           port: 8006
@@ -168,7 +168,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: api-gateway
+              app: kgateway-proxy
       ports:
         - protocol: TCP
           port: 8007

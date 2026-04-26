@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mongodb
   namespace: prod
@@ -11,6 +11,7 @@ spec:
   revisionHistoryLimit: 1
   strategy:
     type: Recreate
+  serviceName: mongodb-headless
   selector:
     matchLabels:
       app: mongodb
@@ -20,8 +21,6 @@ spec:
         app: mongodb
         tier: datastore
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: ip-172-31-12-24
       containers:
         - name: mongodb
           image: mongo:7
@@ -65,10 +64,32 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
-      volumes:
-        - name: mongodb-data
-          persistentVolumeClaim:
-            claimName: mongodb-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: chargeops-nfs
+        resources:
+          requests:
+            storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-headless
+  namespace: prod
+  labels:
+    app: mongodb
+spec:
+  clusterIP: None
+  selector:
+    app: mongodb
+  ports:
+    - name: mongo
+      port: 27017
+      targetPort: mongo
 ---
 apiVersion: v1
 kind: Service
