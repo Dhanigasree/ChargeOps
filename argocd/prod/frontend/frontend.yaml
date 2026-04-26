@@ -23,6 +23,7 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+        fsGroup: 101
       containers:
         - name: frontend
           image: dhaniga/chargeops-frontend:v1

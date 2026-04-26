@@ -17,6 +17,7 @@ const corsOptions = {
 
     return callback(new Error("CORS policy violation"));
   },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true
 };
 

@@ -87,10 +87,11 @@ metadata:
   labels:
     app: api-gateway
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: api-gateway
   ports:
     - name: http
-      port: 8000
-      targetPort: http
+      port: 80
+      targetPort: 8000
+      nodePort: 30001

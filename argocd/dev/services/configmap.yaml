@@ -5,11 +5,11 @@ metadata:
   namespace: dev
 data:
   NODE_ENV: development
-  ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8080
+  ALLOWED_ORIGINS: "*,http://localhost:3000,http://localhost:8080,http://localhost:30080"
   JWT_EXPIRES_IN: 7d
   ALLOW_ADMIN_REGISTRATION: "true"
   AUTO_SEED_STATIONS: "true"
   STRIPE_CURRENCY: usd
   STRIPE_MIN_CHARGE_AMOUNT: "0.5"
-  FRONTEND_APP_URL: http://localhost:3000
+  FRONTEND_APP_URL: http://localhost:30080
   MONGO_HOST: mongodb
