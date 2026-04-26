@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: prod
+  labels:
+    app: payment-service
+    tier: backend
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+        tier: backend
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
+      containers:
+        - name: payment-service
+          image: dhaniga/payment-service:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8005
+          env:
+            - name: PORT
+              value: "8005"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: NODE_ENV
+            - name: ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: ALLOWED_ORIGINS
+            - name: STRIPE_CURRENCY
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: STRIPE_CURRENCY
+            - name: STRIPE_MIN_CHARGE_AMOUNT
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: STRIPE_MIN_CHARGE_AMOUNT
+            - name: FRONTEND_APP_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: FRONTEND_APP_URL
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chargeops-config
+                  key: MONGO_HOST
+            - name: MONGO_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: MONGO_ROOT_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: JWT_SECRET
+            - name: INTERNAL_SERVICE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: API_KEY
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: chargeops-secrets
+                  key: STRIPE_SECRET_KEY
+            - name: BOOKING_SERVICE_URL
+              value: http://booking-service:8004
+            - name: MONGO_URI
+              value: mongodb://$(MONGO_ROOT_USERNAME):$(MONGO_ROOT_PASSWORD)@$(MONGO_HOST):27017/ev-payment-service?authSource=admin
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 18
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL

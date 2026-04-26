@@ -1,0 +1,1 @@
+# API gateway routes are currently defined in the application and service URL env vars.\n# No separate Kubernetes routes ConfigMap exists today. This placeholder is intentionally not referenced by k8s/gateway/kustomization.yaml.

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: station-service
+  namespace: dev
+  labels:
+    app: station-service
+spec:
+  type: ClusterIP
+  selector:
+    app: station-service
+  ports:
+    - name: http
+      port: 8003
+      targetPort: http
