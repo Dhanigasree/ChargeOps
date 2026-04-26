@@ -1,3 +1,4 @@
+# File: .github/workflows/cd-backend-template.yaml
 name: Reusable CD Template - Backend (Node.js)
 
 on:
@@ -62,7 +63,7 @@ jobs:
       - name: Update image tag in manifest
         shell: bash
         run: |
-          python - <<'PY'
+          python3 - <<'PY'
           import pathlib
           import re
           import sys
@@ -74,14 +75,32 @@ jobs:
           target_image = f"{username}/{service}:{sha}"
 
           content = manifest_path.read_text(encoding="utf-8")
-          pattern = re.compile(rf"^(\\s*)image:\\s+\\S*{re.escape(service)}:[^\\s]+\\s*$", re.MULTILINE)
-          updated, count = pattern.subn(lambda m: f"{m.group(1)}image: {target_image}", content)
+
+          # Debug: show all image lines found
+          print("=== Image lines found in manifest ===")
+          for i, line in enumerate(content.splitlines(), 1):
+              if "image:" in line:
+                  print(f"  Line {i}: {repr(line)}")
+
+          # Match any image line containing the service name - flexible pattern
+          pattern = re.compile(
+              rf"^(\s*image:\s+)\S*{re.escape(service)}\S*\s*$",
+              re.MULTILINE
+          )
+
+          updated, count = pattern.subn(
+              lambda m: f"{m.group(1)}{target_image}",
+              content
+          )
 
           if count == 0:
-            print(f"No image reference found for {service} in {manifest_path}", file=sys.stderr)
-            sys.exit(1)
+              print(f"No image reference found for '{service}' in {manifest_path}", file=sys.stderr)
+              print("=== Full file content ===", file=sys.stderr)
+              print(content, file=sys.stderr)
+              sys.exit(1)
 
           manifest_path.write_text(updated, encoding="utf-8")
+          print(f"Updated {count} image reference(s) to {target_image}")
           PY
 
       - name: Commit and push manifest update
