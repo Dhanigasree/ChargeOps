@@ -1,0 +1,32 @@
+# File: .github/workflows/ci-payment-service.yaml
+name: CI - payment-service
+
+on:
+  pull_request:
+    branches: [dev, main]
+    paths: ["apps/payment-service/**"]
+
+jobs:
+  ci:
+    name: Run CI template
+    uses: ./.github/workflows/ci-backend-template.yaml
+    with:
+      service: payment-service
+      working_directory: apps/payment-service
+      node_version: "20"
+      test_command: "npm run test -- --coverage"
+      sonar_project_base_dir: apps/payment-service
+      image_name: ${{ vars.DOCKERHUB_USERNAME }}/payment-service
+      pr_number: ${{ github.event.pull_request.number }}
+      head_ref: ${{ github.head_ref }}
+      actor: ${{ github.actor }}
+      pr_url: ${{ github.event.pull_request.html_url }}
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}

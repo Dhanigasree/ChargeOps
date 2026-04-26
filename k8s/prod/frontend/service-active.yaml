@@ -1,15 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend
+  name: frontend-active
   namespace: prod
-  labels:
-    app: frontend
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: frontend
+    role: active
   ports:
     - name: http
       port: 80
-      targetPort: http
+      targetPort: 80

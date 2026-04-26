@@ -1,15 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service
+  name: auth-service-preview
   namespace: prod
-  labels:
-    app: auth-service
 spec:
   type: ClusterIP
   selector:
     app: auth-service
+    role: preview
   ports:
     - name: http
-      port: 8001
-      targetPort: http
+      port: 3001
+      targetPort: 3001

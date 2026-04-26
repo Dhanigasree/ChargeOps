@@ -5,12 +5,12 @@ resources:
   - configmap.yaml
   - secrets.yaml
   - network-policies.yaml
-  - admin-service/deployment.yaml
-  - admin-service/hpa.yaml
-  - admin-service/service.yaml
-  - auth-service/deployment.yaml
-  - auth-service/hpa.yaml
-  - auth-service/service.yaml
+  - admin-service/rollout.yaml
+  - admin-service/service-active.yaml
+  - admin-service/service-preview.yaml
+  - auth-service/rollout.yaml
+  - auth-service/service-active.yaml
+  - auth-service/service-preview.yaml
   - user-service/deployment.yaml
   - user-service/hpa.yaml
   - user-service/service.yaml
@@ -28,5 +28,6 @@ resources:
   - review-service/service.yaml
   - mongodb/deployment.yaml
   - mongodb/service.yaml
-  - frontend/deployment.yaml
-  - frontend/service.yaml
+  - frontend/rollout.yaml
+  - frontend/service-active.yaml
+  - frontend/service-preview.yaml

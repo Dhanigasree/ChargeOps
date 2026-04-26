@@ -1,15 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: admin-service
-  namespace: dev
-  labels:
-    app: admin-service
+  name: admin-service-preview
+  namespace: prod
 spec:
   type: ClusterIP
   selector:
     app: admin-service
+    role: preview
   ports:
     - name: http
-      port: 8007
-      targetPort: http
+      port: 3000
+      targetPort: 3000

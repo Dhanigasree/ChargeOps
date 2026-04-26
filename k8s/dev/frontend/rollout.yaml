@@ -1,0 +1,41 @@
+# IMAGE TAG WILL BE REPLACED BY CI PIPELINE
+# DO NOT EDIT THE IMAGE LINE MANUALLY
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: frontend
+  namespace: dev
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: dockerhubusername/frontend:latest
+          ports:
+            - name: http
+              containerPort: 80
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+  strategy:
+    blueGreen:
+      activeService: frontend-active
+      previewService: frontend-preview
+      autoPromotionEnabled: false
+      scaleDownDelaySeconds: 30
+      # prePromotionAnalysis:
+      #   templates: []
+      # postPromotionAnalysis:
+      #   templates: []

@@ -1,0 +1,41 @@
+# IMAGE TAG WILL BE REPLACED BY CI PIPELINE
+# DO NOT EDIT THE IMAGE LINE MANUALLY
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: auth-service
+  namespace: prod
+spec:
+  replicas: 3
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: dockerhubusername/auth-service:latest
+          ports:
+            - name: http
+              containerPort: 3001
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  strategy:
+    blueGreen:
+      activeService: auth-service-active
+      previewService: auth-service-preview
+      autoPromotionEnabled: false
+      scaleDownDelaySeconds: 120
+      # prePromotionAnalysis:
+      #   templates: []
+      # postPromotionAnalysis:
+      #   templates: []

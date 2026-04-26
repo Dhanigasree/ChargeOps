@@ -1,2 +1,0 @@
-# No HorizontalPodAutoscaler is currently configured for admin-service.
-# This placeholder is intentionally not referenced by k8s/prod/kustomization.yaml.

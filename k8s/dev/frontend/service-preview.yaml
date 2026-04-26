@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-preview
+  namespace: dev
+spec:
+  type: ClusterIP
+  selector:
+    app: frontend
+    role: preview
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
