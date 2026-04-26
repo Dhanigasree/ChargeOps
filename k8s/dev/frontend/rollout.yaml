@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: dockerhubusername/frontend:latest
+          image: dhaniga/frontend:a746e354ca21979bc7427878f998081b67a93575
           ports:
             - name: http
               containerPort: 80
