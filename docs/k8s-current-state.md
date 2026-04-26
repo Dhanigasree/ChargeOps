@@ -65,7 +65,7 @@ Files:
 - `api-gateway` is deployed separately in both `dev` and `prod`
 - service type is `ClusterIP`
 - listens on port `8000`
-- forwards requests to all backend services using env vars:
+- forwards requests to all backend services using env secrets:
   - `AUTH_SERVICE_URL=http://auth-service:8001`
   - `USER_SERVICE_URL=http://user-service:8002`
   - `STATION_SERVICE_URL=http://station-service:8003`
