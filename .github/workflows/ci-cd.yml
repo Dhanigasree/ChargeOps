@@ -54,20 +54,20 @@ jobs:
 
       - name: Build frontend
         working-directory: ev-frontend
-        continue-on-error: true          # code issues are dev's job — skip
+        continue-on-error: true
         run: |
           npm ci
           npm run build
 
       - name: Lint & test frontend
         working-directory: ev-frontend
-        continue-on-error: true          # code issues are dev's job — skip
+        continue-on-error: true
         run: |
           npm run lint --if-present
           npm test --if-present
 
       - name: Install + validate backend services
-        continue-on-error: true          # code issues are dev's job — skip
+        continue-on-error: true
         shell: bash
         run: |
           services=(
@@ -138,7 +138,7 @@ jobs:
       - name: Snyk scan frontend
         working-directory: ev-frontend
         run: |
-          npm install                              # install deps before scan
+          npm install
           snyk test --severity-threshold=high
 
       - name: Snyk scan backend services
@@ -155,7 +155,6 @@ jobs:
           )
           for service in "${services[@]}"; do
             echo "──── Scanning $service ────"
-            # install deps first — Snyk requires node_modules to exist
             npm install --prefix "$service" || { echo "⚠ npm install failed for $service — skipping Snyk scan"; continue; }
             snyk test \
               --severity-threshold=high \
@@ -213,8 +212,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # ── Trivy scan — fixed to v0.30.0 ──
       - name: Trivy image scan
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: ${{ steps.vars.outputs.image }}:${{ github.sha }}
           format: sarif
@@ -249,7 +249,6 @@ jobs:
   notify:
     name: Email notification
     runs-on: ubuntu-latest
-    # always runs — even when upstream jobs fail
     if: always()
     needs:
       - validate
