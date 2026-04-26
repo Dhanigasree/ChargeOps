@@ -11,7 +11,15 @@ RUN npm run build
 FROM nginxinc/nginx-unprivileged:1.27-alpine
 
 USER root
-RUN mkdir -p /etc/nginx/templates /tmp/nginx /var/cache/nginx /var/run \
+RUN mkdir -p \
+    /etc/nginx/templates \
+    /tmp/nginx/client_temp \
+    /tmp/nginx/proxy_temp \
+    /tmp/nginx/fastcgi_temp \
+    /tmp/nginx/uwsgi_temp \
+    /tmp/nginx/scgi_temp \
+    /var/cache/nginx \
+    /var/run \
   && chown -R 101:0 /etc/nginx /tmp/nginx /var/cache/nginx /var/run /usr/share/nginx/html
 COPY --chown=101:0 nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=builder --chown=101:0 /app/dist /usr/share/nginx/html

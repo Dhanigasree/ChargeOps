@@ -8,6 +8,9 @@ metadata:
     tier: web
 spec:
   replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: frontend
@@ -20,8 +23,6 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
-        runAsUser: 0
-        runAsGroup: 0
       containers:
         - name: frontend
           image: dhaniga/chargeops-frontend:v1
@@ -29,21 +30,35 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+          env:
+            - name: API_GATEWAY_URL
+              value: http://api-gateway.dev.svc.cluster.local:8000
+            - name: DNS_RESOLVER
+              value: 10.96.0.10
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101
+            runAsGroup: 0
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
           livenessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
             initialDelaySeconds: 20
             periodSeconds: 20
           readinessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
           startupProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
             failureThreshold: 18
             periodSeconds: 5
@@ -54,11 +69,6 @@ spec:
             limits:
               cpu: 300m
               memory: 256Mi
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
 ---
 apiVersion: v1
 kind: Service
@@ -74,5 +84,5 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: http
+      targetPort: 8080
       nodePort: 30080
