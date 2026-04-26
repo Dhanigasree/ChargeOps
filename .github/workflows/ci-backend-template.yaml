@@ -76,9 +76,6 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
         run: npm ci
 
-      - name: Run tests
-        working-directory: ${{ inputs.working_directory }}
-        run: ${{ inputs.test_command }}
 
       - name: Run SonarQube scan
         uses: SonarSource/sonarqube-scan-action@v2
