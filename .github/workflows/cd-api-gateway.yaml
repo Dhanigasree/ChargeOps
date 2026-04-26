@@ -1,0 +1,19 @@
+name: CD - api-gateway
+
+on:
+  push:
+    branches: [dev, main]
+    paths:
+      - "ev-backend/services/api-gateway/**"
+
+jobs:
+  cd:
+    name: Run CD template
+    uses: ./.github/workflows/cd-backend-template.yaml
+    with:
+      service: api-gateway
+      working_directory: ev-backend/services/api-gateway
+      k8s_manifest_path: k8s-manifests/base/api-gateway.yaml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
