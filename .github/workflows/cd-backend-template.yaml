@@ -1,5 +1,4 @@
-# File: .github/workflows/cd-backend-template.yaml
-name: Reusable CD Template — Backend (Node.js)
+name: Reusable CD Template - Backend (Node.js)
 
 on:
   workflow_call:
@@ -19,6 +18,9 @@ on:
       DOCKERHUB_TOKEN:
         required: true
 
+permissions:
+  contents: write
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -35,12 +37,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Docker image
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ${{ inputs.working_directory }}
           file: ${{ inputs.working_directory }}/Dockerfile
-          push: true                                        # ✅ push on merge
+          push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.service }}:${{ github.sha }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.service }}:latest
@@ -55,16 +57,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-      - name: Update image tag in rollout.yaml
+      - name: Update image tag in manifest
+        shell: bash
         run: |
-          sed -i "s|image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.service }}:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.service }}:${{ github.sha }}|g" ${{ inputs.k8s_manifest_path }}
+          python - <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          manifest_path = pathlib.Path("${{ inputs.k8s_manifest_path }}")
+          service = "${{ inputs.service }}"
+          username = "${{ secrets.DOCKERHUB_USERNAME }}"
+          sha = "${{ github.sha }}"
+          target_image = f"{username}/{service}:{sha}"
+
+          content = manifest_path.read_text(encoding="utf-8")
+          pattern = re.compile(rf"^(\\s*)image:\\s+\\S*{re.escape(service)}:[^\\s]+\\s*$", re.MULTILINE)
+          updated, count = pattern.subn(lambda m: f"{m.group(1)}image: {target_image}", content)
+
+          if count == 0:
+            print(f"No image reference found for {service} in {manifest_path}", file=sys.stderr)
+            sys.exit(1)
+
+          manifest_path.write_text(updated, encoding="utf-8")
+          PY
 
       - name: Commit and push manifest update
+        shell: bash
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add ${{ inputs.k8s_manifest_path }}
+          git add "${{ inputs.k8s_manifest_path }}"
+          if git diff --cached --quiet; then
+            echo "No manifest changes to commit."
+            exit 0
+          fi
           git commit -m "ci: update ${{ inputs.service }} image to ${{ github.sha }} [skip ci]"
           git push

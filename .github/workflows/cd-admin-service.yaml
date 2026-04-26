@@ -1,0 +1,19 @@
+name: CD - admin-service
+
+on:
+  push:
+    branches: [dev, main]
+    paths:
+      - "ev-backend/services/admin-service/**"
+
+jobs:
+  cd:
+    name: Run CD template
+    uses: ./.github/workflows/cd-backend-template.yaml
+    with:
+      service: admin-service
+      working_directory: ev-backend/services/admin-service
+      k8s_manifest_path: k8s/dev/admin-service/rollout.yaml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
