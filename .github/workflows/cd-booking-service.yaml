@@ -1,0 +1,23 @@
+name: CD - booking-service
+
+on:
+  push:
+    branches: [dev, main]
+    paths:
+      - "ev-backend/services/booking-service/**"
+
+permissions:
+  contents: write
+
+jobs:
+  cd:
+    name: Run CD template
+    uses: ./.github/workflows/cd-backend-template.yaml
+    with:
+      service: booking-service
+      working_directory: ev-backend/services/booking-service
+      k8s_manifest_path: k8s/dev/booking-service/deployment.yaml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+

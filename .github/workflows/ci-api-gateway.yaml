@@ -1,11 +1,6 @@
-# File: .github/workflows/ci-api-gateway.yaml
 name: CI - api-gateway
 
 on:
-  push:
-    branches: [dev, main]
-    paths:
-      - "ev-backend/services/api-gateway/**"
   pull_request:
     branches: [dev, main]
     paths:
@@ -17,11 +12,10 @@ jobs:
     uses: ./.github/workflows/ci-backend-template.yaml
     with:
       service: api-gateway
-      working_directory: apps/api-gateway
+      working_directory: ev-backend/services/api-gateway
       node_version: "20"
       test_command: "npm run test -- --coverage"
-      sonar_project_base_dir: apps/api-gateway
-      image_name: ${{ secrets.DOCKERHUB_USERNAME }}/api-gateway
+      sonar_project_base_dir: ev-backend/services/api-gateway
       pr_number: ${{ github.event.pull_request.number }}
       head_ref: ${{ github.head_ref }}
       actor: ${{ github.actor }}

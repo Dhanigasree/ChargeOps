@@ -1,11 +1,6 @@
-# File: .github/workflows/ci-booking-service.yaml
 name: CI - booking-service
 
 on:
-  push:
-    branches: [dev, main]
-    paths:
-      - "ev-backend/services/booking-service/**"
   pull_request:
     branches: [dev, main]
     paths:
@@ -17,11 +12,10 @@ jobs:
     uses: ./.github/workflows/ci-backend-template.yaml
     with:
       service: booking-service
-      working_directory: apps/booking-service
+      working_directory: ev-backend/services/booking-service
       node_version: "20"
       test_command: "npm run test -- --coverage"
-      sonar_project_base_dir: apps/booking-service
-      image_name: ${{ secrets.DOCKERHUB_USERNAME }}/booking-service
+      sonar_project_base_dir: ev-backend/services/booking-service
       pr_number: ${{ github.event.pull_request.number }}
       head_ref: ${{ github.head_ref }}
       actor: ${{ github.actor }}

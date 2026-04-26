@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: chargeops-prod
+  name: chargeops-prod-frontend
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/Dhanigasree/ChargeOps.git
     targetRevision: main
-    path: argocd/prod
+    path: argocd/prod/frontend
   destination:
     server: https://kubernetes.default.svc
     namespace: prod

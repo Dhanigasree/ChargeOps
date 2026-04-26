@@ -1,11 +1,6 @@
-# File: .github/workflows/ci-frontend.yaml
 name: CI - Frontend (React)
 
 on:
-  push:
-    branches: [dev, main]
-    paths:
-      - "ev-frontend/**"
   pull_request:
     branches: [dev, main]
     paths:
@@ -17,11 +12,10 @@ jobs:
     uses: ./.github/workflows/ci-frontend-template.yaml
     with:
       service: frontend
-      working_directory: apps/frontend
+      working_directory: ev-frontend
       node_version: "20"
       test_command: "npm run test -- --coverage --watchAll=false"
-      sonar_project_base_dir: apps/frontend
-      image_name: ${{ secrets.DOCKERHUB_USERNAME }}/frontend
+      sonar_project_base_dir: ev-frontend
       pr_number: ${{ github.event.pull_request.number }}
       head_ref: ${{ github.head_ref }}
       actor: ${{ github.actor }}

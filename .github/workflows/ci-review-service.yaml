@@ -1,11 +1,6 @@
-# File: .github/workflows/ci-review-service.yaml
 name: CI - review-service
 
 on:
-  push:
-    branches: [dev, main]
-    paths:
-      - "ev-backend/services/review-service/**"
   pull_request:
     branches: [dev, main]
     paths:
@@ -17,11 +12,10 @@ jobs:
     uses: ./.github/workflows/ci-backend-template.yaml
     with:
       service: review-service
-      working_directory: apps/review-service
+      working_directory: ev-backend/services/review-service
       node_version: "20"
       test_command: "npm run test -- --coverage"
-      sonar_project_base_dir: apps/review-service
-      image_name: ${{ secrets.DOCKERHUB_USERNAME }}/review-service
+      sonar_project_base_dir: ev-backend/services/review-service
       pr_number: ${{ github.event.pull_request.number }}
       head_ref: ${{ github.head_ref }}
       actor: ${{ github.actor }}
