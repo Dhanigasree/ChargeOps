@@ -2,9 +2,14 @@
 name: CI - payment-service
 
 on:
+  push:
+    branches: [dev, main]
+    paths:
+      - "ev-backend/services/payment-service/**"
   pull_request:
     branches: [dev, main]
-    paths: ["apps/payment-service/**"]
+    paths:
+      - "ev-backend/services/payment-service/**"
 
 jobs:
   ci:

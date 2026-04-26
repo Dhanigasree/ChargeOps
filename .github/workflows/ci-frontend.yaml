@@ -2,9 +2,14 @@
 name: CI - Frontend (React)
 
 on:
+  push:
+    branches: [dev, main]
+    paths:
+      - "ev-frontend/**"
   pull_request:
     branches: [dev, main]
-    paths: ["apps/frontend/**"]
+    paths:
+      - "ev-frontend/**"
 
 jobs:
   ci:

@@ -2,6 +2,8 @@
 name: Reusable CI Template — Frontend (React)
 
 on:
+  # Reference trigger path for frontend callers:
+  # ev-frontend/**
   workflow_call:
     inputs:
       service:

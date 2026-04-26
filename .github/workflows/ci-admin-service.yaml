@@ -2,9 +2,14 @@
 name: CI - admin-service
 
 on:
+  push:
+    branches: [dev, main]
+    paths:
+      - "ev-backend/services/admin-service/**"
   pull_request:
     branches: [dev, main]
-    paths: ["apps/admin-service/**"]
+    paths:
+      - "ev-backend/services/admin-service/**"
 
 jobs:
   ci:

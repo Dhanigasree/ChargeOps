@@ -2,6 +2,8 @@
 name: Reusable CI Template — Backend (Node.js)
 
 on:
+  # Reference trigger path for backend service callers:
+  # ev-backend/services/admin-service/**
   workflow_call:
     inputs:
       service:
