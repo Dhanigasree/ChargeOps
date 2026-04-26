@@ -6,8 +6,6 @@ metadata:
 spec:
   parentRefs:
     - name: chargeops
-  hostnames:
-    - prod.chargeops.local
   rules:
     - matches:
         - path:
@@ -67,8 +65,6 @@ metadata:
 spec:
   parentRefs:
     - name: chargeops
-  hostnames:
-    - prod.chargeops.local
   rules:
     - matches:
         - path:
