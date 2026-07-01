@@ -70,8 +70,7 @@ data "aws_iam_policy_document" "ebs_kms" {
       type = "AWS"
       identifiers = [
         aws_iam_role.node_group.arn,
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/eks-nodegroup.amazonaws.com/AWSServiceRoleForAmazonEKSNodegroup"
+        aws_iam_service_linked_role.autoscaling.arn
       ]
     }
 
@@ -94,8 +93,7 @@ data "aws_iam_policy_document" "ebs_kms" {
       type = "AWS"
       identifiers = [
         aws_iam_role.node_group.arn,
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
-        "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/eks-nodegroup.amazonaws.com/AWSServiceRoleForAmazonEKSNodegroup"
+        aws_iam_service_linked_role.autoscaling.arn
       ]
     }
 

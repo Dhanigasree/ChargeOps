@@ -64,3 +64,7 @@ resource "aws_iam_role_policy_attachment" "node_ebs_csi" {
   role       = aws_iam_role.node_group.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }
+
+resource "aws_iam_service_linked_role" "autoscaling" {
+  aws_service_name = "autoscaling.amazonaws.com"
+}
