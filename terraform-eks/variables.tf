@@ -13,7 +13,7 @@ variable "cluster_name" {
 variable "cluster_admin_principal_arn" {
   description = "IAM user or role ARN that receives Kubernetes cluster-admin access through the EKS access API."
   type        = string
-  default     = "arn:aws:iam::649796199107:user/Dhaniga"
+  default     = "arn:aws:iam::649796199107:user/root"
 }
 
 variable "kubernetes_version" {

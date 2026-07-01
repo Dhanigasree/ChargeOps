@@ -11,7 +11,7 @@ data:
       - system:nodes
       username: system:node:{{EC2PrivateDNSName}}
   mapUsers: |
-    - userarn: arn:aws:iam::649796199107:user/Dhaniga
-      username: arn:aws:iam::649796199107:user/Dhaniga
+    - userarn: arn:aws:iam::649796199107:user/root
+      username: arn:aws:iam::649796199107:user/root
       groups:
       - system:masters
