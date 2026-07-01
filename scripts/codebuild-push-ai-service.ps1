@@ -1,6 +1,6 @@
 param(
   [string]$Region = "ap-south-1",
-  [string]$AccountId = "497676936148",
+  [string]$AccountId = "649796199107",
   [string]$Repository = "chargeops/ai-service",
   [string]$Branch = "test",
   [string]$ServiceDir = "ev-backend/services/ai-service",

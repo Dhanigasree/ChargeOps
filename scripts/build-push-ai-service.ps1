@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = "C:\Users\admin\Desktop\ChargeOps"
 $region = "ap-south-1"
-$registry = "497676936148.dkr.ecr.ap-south-1.amazonaws.com"
+$registry = "649796199107.dkr.ecr.ap-south-1.amazonaws.com"
 $image = "$registry/chargeops/ai-service:latest"
 $logPath = Join-Path $repoRoot "scripts\build-push-ai-service.log"
 $aws = "C:\Program Files\Amazon\AWSCLIV2\aws.exe"

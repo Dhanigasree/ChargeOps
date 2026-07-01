@@ -391,7 +391,7 @@ metadata:
   name: booking-service
   namespace: prod
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::497676936148:role/chargeops-eks-booking-service
+    eks.amazonaws.com/role-arn: arn:aws:iam::649796199107:role/chargeops-eks-booking-service
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -428,7 +428,7 @@ spec:
             - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: booking-service
-          image: 497676936148.dkr.ecr.ap-south-1.amazonaws.com/chargeops/booking-service:latest
+          image: 649796199107.dkr.ecr.ap-south-1.amazonaws.com/chargeops/booking-service:latest
           imagePullPolicy: Always
           envFrom:
             - secretRef:
@@ -544,7 +544,7 @@ metadata:
   name: payment-service
   namespace: prod
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::497676936148:role/chargeops-eks-payment-service
+    eks.amazonaws.com/role-arn: arn:aws:iam::649796199107:role/chargeops-eks-payment-service
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -581,7 +581,7 @@ spec:
             - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: payment-service
-          image: 497676936148.dkr.ecr.ap-south-1.amazonaws.com/chargeops/payment-service:latest
+          image: 649796199107.dkr.ecr.ap-south-1.amazonaws.com/chargeops/payment-service:latest
           imagePullPolicy: Always
           envFrom:
             - secretRef:

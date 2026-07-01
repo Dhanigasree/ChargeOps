@@ -4,7 +4,7 @@ metadata:
   name: invoice-worker
   namespace: prod
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::497676936148:role/chargeops-eks-invoice-worker
+    eks.amazonaws.com/role-arn: arn:aws:iam::649796199107:role/chargeops-eks-invoice-worker
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -39,7 +39,7 @@ spec:
             - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: invoice-worker
-          image: 497676936148.dkr.ecr.ap-south-1.amazonaws.com/chargeops/payment-service:latest
+          image: 649796199107.dkr.ecr.ap-south-1.amazonaws.com/chargeops/payment-service:latest
           imagePullPolicy: Always
           command: ["node", "workers/invoiceWorker.js"]
           env:
@@ -105,7 +105,7 @@ metadata:
   name: notification-worker
   namespace: prod
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::497676936148:role/chargeops-eks-notification-worker
+    eks.amazonaws.com/role-arn: arn:aws:iam::649796199107:role/chargeops-eks-notification-worker
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -140,7 +140,7 @@ spec:
             - until nc -z mongodb 27017; do echo "waiting for mongodb"; sleep 5; done
       containers:
         - name: notification-worker
-          image: 497676936148.dkr.ecr.ap-south-1.amazonaws.com/chargeops/payment-service:latest
+          image: 649796199107.dkr.ecr.ap-south-1.amazonaws.com/chargeops/payment-service:latest
           imagePullPolicy: Always
           command: ["node", "workers/notificationWorker.js"]
           env:

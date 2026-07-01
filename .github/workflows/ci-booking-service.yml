@@ -17,7 +17,7 @@ permissions:
 
 env:
   AWS_REGION: ap-south-1
-  AWS_ACCOUNT_ID: "497676936148"
+  AWS_ACCOUNT_ID: "649796199107"
   SERVICE: booking-service
   SERVICE_DIR: ev-backend/services/booking-service
   ECR_REPOSITORY: chargeops/booking-service

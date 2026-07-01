@@ -11,7 +11,7 @@ data:
   BEDROCK_MAX_TOKENS: "1200"
   BEDROCK_TEMPERATURE: "0.2"
   CHAT_MEMORY_LIMIT: "8"
-  PAYMENT_INVOICE_BUCKET_NAME: chargeops-payment-bills-497676936148-ap-south-1
+  PAYMENT_INVOICE_BUCKET_NAME: chargeops-payment-bills-649796199107-ap-south-1
   SERVICE_REQUEST_TIMEOUT_MS: "10000"
   USER_SERVICE_URL: http://user-service:8002
   STATION_SERVICE_URL: http://station-service:8003
@@ -38,7 +38,7 @@ metadata:
   name: ai-service
   namespace: prod
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::497676936148:role/chargeops-eks-ai-service
+    eks.amazonaws.com/role-arn: arn:aws:iam::649796199107:role/chargeops-eks-ai-service
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -66,7 +66,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: ai-service
-          image: 497676936148.dkr.ecr.ap-south-1.amazonaws.com/chargeops/ai-service:ai-service-v5
+          image: 649796199107.dkr.ecr.ap-south-1.amazonaws.com/chargeops/ai-service:ai-service-v5
           imagePullPolicy: Always
           ports:
             - name: http

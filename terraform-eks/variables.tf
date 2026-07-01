@@ -13,7 +13,7 @@ variable "cluster_name" {
 variable "cluster_admin_principal_arn" {
   description = "IAM user or role ARN that receives Kubernetes cluster-admin access through the EKS access API."
   type        = string
-  default     = "arn:aws:iam::497676936148:user/Dhaniga"
+  default     = "arn:aws:iam::649796199107:user/Dhaniga"
 }
 
 variable "kubernetes_version" {
@@ -73,7 +73,7 @@ variable "oidc_thumbprint" {
 variable "state_bucket_name" {
   description = "S3 bucket for Terraform state."
   type        = string
-  default     = "chargeops-terraform-state-497676936148-ap-south-1"
+  default     = "chargeops-terraform-state-649796199107-ap-south-1"
 }
 
 variable "state_lock_table_name" {
@@ -85,19 +85,19 @@ variable "state_lock_table_name" {
 variable "reports_bucket_name" {
   description = "S3 bucket for application and operational reports."
   type        = string
-  default     = "chargeops-reports-497676936148-ap-south-1"
+  default     = "chargeops-reports-649796199107-ap-south-1"
 }
 
 variable "uploads_bucket_name" {
   description = "S3 bucket for ChargeOps uploads."
   type        = string
-  default     = "chargeops-uploads-497676936148-ap-south-1"
+  default     = "chargeops-uploads-649796199107-ap-south-1"
 }
 
 variable "payment_bills_bucket_name" {
   description = "Private S3 bucket for generated payment invoice PDFs."
   type        = string
-  default     = "chargeops-payment-bills-497676936148-ap-south-1"
+  default     = "chargeops-payment-bills-649796199107-ap-south-1"
 }
 
 variable "ecr_repositories" {
